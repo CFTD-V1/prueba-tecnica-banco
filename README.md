@@ -44,12 +44,12 @@ transaccionales sobre esos productos y consultar los estados de cuenta.
 
 ### Requisitos previos
 
-- JDK 21
 - Docker y Docker Compose
+- JDK 21, únicamente si se quiere ejecutar la aplicación fuera de contenedor
 
 No es necesario instalar Maven: el proyecto incluye el wrapper (`mvnw`).
 
-### 1. Levantar la base de datos
+### Opción A: todo en contenedores
 
 Desde la raíz del repositorio:
 
@@ -57,19 +57,55 @@ Desde la raíz del repositorio:
 docker compose up -d
 ```
 
-Esto arranca un contenedor `banco-postgres` con PostgreSQL 16, la base de datos `banco_db`,
-el usuario `banco_user` y un volumen para que los datos sobrevivan al reinicio.
+Levanta dos contenedores: `banco-postgres` con PostgreSQL 16 y `banco-app` con la
+aplicación. La API queda disponible en `http://localhost:8080`.
 
-### 2. Ejecutar la aplicación
+La aplicación no arranca hasta que la base de datos responde: el servicio `postgres` declara
+una comprobación de salud con `pg_isready` y el servicio `app` depende de ella con
+`condition: service_healthy`. Esto evita el error típico de que la aplicación intente
+conectarse antes de que el motor esté listo.
+
+Comandos útiles:
 
 ```bash
+docker compose ps                 # estado y salud de los contenedores
+docker compose logs -f app        # registros de la aplicación
+docker compose build app          # reconstruir la imagen tras cambiar el código
+docker compose down               # detener (los datos permanecen en el volumen)
+```
+
+### Opción B: base de datos en contenedor y aplicación local
+
+Es la forma cómoda de trabajar mientras se desarrolla, porque no hay que reconstruir la
+imagen en cada cambio:
+
+```bash
+docker compose up -d postgres
 cd banco
 ./mvnw spring-boot:run
 ```
 
-La API queda disponible en `http://localhost:8080`.
+### Cómo está construida la imagen
 
-### 3. Ejecutar las pruebas
+El `Dockerfile` usa una construcción en dos etapas:
+
+1. **Compilación**: parte de `maven:3.9-eclipse-temurin-21`, descarga las dependencias y
+   empaqueta el jar. Como el `pom.xml` se copia antes que el código fuente, Docker reutiliza
+   la capa de dependencias mientras el pom no cambie.
+2. **Ejecución**: parte de `eclipse-temurin:21-jre-alpine` y solo recibe el jar ya
+   construido. La imagen final no contiene el código fuente, ni Maven, ni el compilador.
+
+El resultado son 487 MB frente a los 809 MB que ocupa la imagen de compilación.
+
+Otras dos decisiones sobre la imagen:
+
+- El proceso corre con un usuario propio (`banco`), no como `root`. Si alguien lograra
+  ejecutar código dentro del contenedor, no tendría privilegios de administrador.
+- Se declara un `HEALTHCHECK` que consulta un endpoint real de la API. Responder 200 implica
+  que la aplicación arrancó y que la conexión con la base de datos funciona, no solo que el
+  proceso existe.
+
+### Ejecutar las pruebas
 
 ```bash
 cd banco
@@ -603,11 +639,10 @@ Implementado y verificado:
 - Manejo global de errores con respuestas uniformes.
 - 100 pruebas automáticas.
 - Scripts DDL y DML versionados.
+- Aplicación y base de datos ejecutables en contenedores con un solo comando.
 
 Pendiente:
 
-- Empaquetado de la aplicación en una imagen Docker. Actualmente solo la base de datos está
-  contenerizada; la aplicación se ejecuta con el wrapper de Maven.
 - Configuración de CORS para permitir el consumo desde el front.
 - Colección de Postman con las peticiones de ejemplo.
 - Aplicación front en Angular.
