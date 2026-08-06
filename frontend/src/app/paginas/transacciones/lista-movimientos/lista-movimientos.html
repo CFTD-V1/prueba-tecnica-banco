@@ -1,0 +1,76 @@
+<div class="encabezado">
+  <h1>Movimientos</h1>
+  <a routerLink="/transacciones/nueva" class="boton">Nuevo movimiento</a>
+</div>
+
+@if (error()) {
+  <p class="aviso aviso--error">{{ error() }}</p>
+}
+
+<div class="campo" style="max-width: 360px">
+  <label for="cuenta">Estado de cuenta</label>
+  <select id="cuenta" (change)="filtrar($any($event.target).value)">
+    <option value="">Todos los movimientos</option>
+    @for (producto of productos(); track producto.id) {
+      <option [value]="producto.id">
+        {{ producto.numeroCuenta }} - {{ producto.tipoCuenta }}
+      </option>
+    }
+  </select>
+</div>
+
+@if (cuentaActual(); as cuenta) {
+  <p class="aviso aviso--exito">
+    Cuenta {{ cuenta.numeroCuenta }} ({{ cuenta.tipoCuenta }}) - saldo actual:
+    <strong>{{ cuenta.saldo | currency: 'COP' : 'symbol-narrow' : '1.2-2' }}</strong>
+  </p>
+}
+
+@if (cargando()) {
+  <p class="vacio">Cargando movimientos...</p>
+} @else if (movimientos().length === 0) {
+  <div class="tabla-contenedor">
+    <p class="vacio">No hay movimientos registrados.</p>
+  </div>
+} @else {
+  <div class="tabla-contenedor">
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Tipo</th>
+          <th>Naturaleza</th>
+          <th>Cuenta</th>
+          <th>Contraparte</th>
+          <th class="numero">Monto</th>
+          <th class="numero">Saldo resultante</th>
+          <th>Descripción</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (movimiento of movimientos(); track movimiento.id) {
+          <tr>
+            <td class="texto-tenue">{{ movimiento.fecha | date: 'dd/MM/yyyy HH:mm' }}</td>
+            <td>{{ movimiento.tipo }}</td>
+            <td>
+              <span [class]="claseNaturaleza(movimiento.naturaleza)">
+                {{ movimiento.naturaleza }}
+              </span>
+            </td>
+            <td>{{ numeroCuenta(movimiento.productoId) }}</td>
+            <td class="texto-tenue">
+              {{ movimiento.productoRelacionadoId ? numeroCuenta(movimiento.productoRelacionadoId) : '-' }}
+            </td>
+            <td class="numero">
+              {{ montoConSigno(movimiento) | currency: 'COP' : 'symbol-narrow' : '1.2-2' }}
+            </td>
+            <td class="numero">
+              {{ movimiento.saldoResultante | currency: 'COP' : 'symbol-narrow' : '1.2-2' }}
+            </td>
+            <td class="texto-tenue">{{ movimiento.descripcion || '-' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

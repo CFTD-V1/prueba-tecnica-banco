@@ -1,0 +1,62 @@
+<div class="encabezado">
+  <h1>Clientes</h1>
+  <a routerLink="/clientes/nuevo" class="boton">Nuevo cliente</a>
+</div>
+
+@if (error()) {
+  <p class="aviso aviso--error">{{ error() }}</p>
+}
+@if (aviso()) {
+  <p class="aviso aviso--exito">{{ aviso() }}</p>
+}
+
+@if (cargando()) {
+  <p class="vacio">Cargando clientes...</p>
+} @else if (clientes().length === 0) {
+  <div class="tabla-contenedor">
+    <p class="vacio">Todavía no hay clientes registrados.</p>
+  </div>
+} @else {
+  <div class="tabla-contenedor">
+    <table>
+      <thead>
+        <tr>
+          <th>Identificación</th>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Nacimiento</th>
+          <th>Creado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (cliente of clientes(); track cliente.id) {
+          <tr>
+            <td>{{ cliente.tipoIdentificacion }} {{ cliente.numeroIdentificacion }}</td>
+            <td>{{ cliente.nombres }} {{ cliente.apellido }}</td>
+            <td>{{ cliente.correo }}</td>
+            <td>{{ cliente.fechaNacimiento | date: 'dd/MM/yyyy' }}</td>
+            <td class="texto-tenue">{{ cliente.fechaCreacion | date: 'dd/MM/yyyy HH:mm' }}</td>
+            <td>
+              <div class="acciones">
+                <a
+                  [routerLink]="['/clientes', cliente.id, 'editar']"
+                  class="boton boton--secundario boton--pequeno"
+                >
+                  Editar
+                </a>
+                <button
+                  type="button"
+                  class="boton boton--peligro boton--pequeno"
+                  (click)="eliminar(cliente)"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

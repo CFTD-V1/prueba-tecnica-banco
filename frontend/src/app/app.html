@@ -1,0 +1,21 @@
+<header class="cabecera">
+  <div class="contenedor cabecera__interior">
+    <span class="cabecera__titulo">{{ titulo }}</span>
+
+    <nav class="menu">
+      <a routerLink="/clientes" routerLinkActive="menu__enlace--activo" class="menu__enlace">
+        Clientes
+      </a>
+      <a routerLink="/productos" routerLinkActive="menu__enlace--activo" class="menu__enlace">
+        Productos
+      </a>
+      <a routerLink="/transacciones" routerLinkActive="menu__enlace--activo" class="menu__enlace">
+        Movimientos
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main class="contenedor contenido">
+  <router-outlet />
+</main>
