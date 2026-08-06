@@ -22,14 +22,26 @@
       <label for="numeroIdentificacion">Número de identificación</label>
       <input id="numeroIdentificacion" formControlName="numeroIdentificacion" maxlength="20" />
       @if (invalido('numeroIdentificacion')) {
-        <span class="campo__error">El número de identificación es obligatorio.</span>
+        <span class="campo__error">
+          El número de identificación es obligatorio y debe tener al menos 5 caracteres.
+        </span>
+      } @else if (identificacionConFormatoInvalido()) {
+        <span class="campo__error">
+          {{
+            esPasaporte()
+              ? 'El pasaporte solo puede contener letras y números.'
+              : 'La cédula solo puede contener dígitos.'
+          }}
+        </span>
       }
     </div>
 
     <div class="campo" [class.campo--invalido]="invalido('nombres')">
       <label for="nombres">Nombres</label>
       <input id="nombres" formControlName="nombres" maxlength="100" />
-      @if (invalido('nombres')) {
+      @if (formulario.get('nombres')?.hasError('pattern')) {
+        <span class="campo__error">Los nombres solo pueden contener letras.</span>
+      } @else if (invalido('nombres')) {
         <span class="campo__error">Los nombres deben tener al menos 2 caracteres.</span>
       }
     </div>
@@ -37,7 +49,9 @@
     <div class="campo" [class.campo--invalido]="invalido('apellido')">
       <label for="apellido">Apellido</label>
       <input id="apellido" formControlName="apellido" maxlength="100" />
-      @if (invalido('apellido')) {
+      @if (formulario.get('apellido')?.hasError('pattern')) {
+        <span class="campo__error">El apellido solo puede contener letras.</span>
+      } @else if (invalido('apellido')) {
         <span class="campo__error">El apellido debe tener al menos 2 caracteres.</span>
       }
     </div>
@@ -55,6 +69,8 @@
       <input id="fechaNacimiento" type="date" formControlName="fechaNacimiento" />
       @if (formulario.get('fechaNacimiento')?.hasError('menorDeEdad')) {
         <span class="campo__error">El cliente debe ser mayor de edad.</span>
+      } @else if (formulario.get('fechaNacimiento')?.hasError('edadImposible')) {
+        <span class="campo__error">Revise la fecha: la edad supera los 120 años.</span>
       } @else if (invalido('fechaNacimiento')) {
         <span class="campo__error">La fecha de nacimiento es obligatoria.</span>
       }

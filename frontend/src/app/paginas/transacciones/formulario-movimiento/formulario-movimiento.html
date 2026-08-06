@@ -74,7 +74,9 @@
     <div class="campo" [class.campo--invalido]="invalido('monto')">
       <label for="monto">Monto</label>
       <input id="monto" type="number" min="0.01" step="0.01" formControlName="monto" />
-      @if (invalido('monto')) {
+      @if (formulario.get('monto')?.hasError('demasiadosDecimales')) {
+        <span class="campo__error">El monto admite máximo dos decimales.</span>
+      } @else if (invalido('monto')) {
         <span class="campo__error">El monto debe ser mayor que cero.</span>
       }
     </div>

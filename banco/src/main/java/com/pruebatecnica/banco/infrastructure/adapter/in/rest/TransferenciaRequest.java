@@ -2,6 +2,7 @@ package com.pruebatecnica.banco.infrastructure.adapter.in.rest;
 
 import java.math.BigDecimal;
 
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -12,7 +13,7 @@ public record TransferenciaRequest(
 
         @NotNull(message = "La cuenta de destino es obligatoria") Long productoDestinoId,
 
-        @NotNull(message = "El monto es obligatorio") @Positive(message = "El monto debe ser mayor que cero") BigDecimal monto,
+        @NotNull(message = "El monto es obligatorio") @Positive(message = "El monto debe ser mayor que cero") @Digits(integer = 15, fraction = 2, message = "El monto admite máximo 2 decimales") BigDecimal monto,
 
         @Size(max = 200, message = "La descripción no puede superar 200 caracteres") String descripcion) {
 }
