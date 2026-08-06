@@ -7,6 +7,7 @@ import com.pruebatecnica.banco.domain.model.Producto;
 import com.pruebatecnica.banco.domain.port.in.ProductoCasosDeUso;
 import com.pruebatecnica.banco.domain.port.out.ClienteRepositoryPort;
 import com.pruebatecnica.banco.domain.port.out.ProductoRepositoryPort;
+import com.pruebatecnica.banco.domain.port.out.TransaccionRepositoryPort;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -22,11 +23,14 @@ public class ProductoService implements ProductoCasosDeUso {
 
     private final ProductoRepositoryPort productoRepositoryPort;
     private final ClienteRepositoryPort clienteRepositoryPort;
+    private final TransaccionRepositoryPort transaccionRepositoryPort;
 
     public ProductoService(ProductoRepositoryPort productoRepositoryPort,
-            ClienteRepositoryPort clienteRepositoryPort) {
+            ClienteRepositoryPort clienteRepositoryPort,
+            TransaccionRepositoryPort transaccionRepositoryPort) {
         this.productoRepositoryPort = productoRepositoryPort;
         this.clienteRepositoryPort = clienteRepositoryPort;
+        this.transaccionRepositoryPort = transaccionRepositoryPort;
     }
 
     @Override
@@ -99,6 +103,10 @@ public class ProductoService implements ProductoCasosDeUso {
 
         if (existente.getSaldo().compareTo(BigDecimal.ZERO) != 0) {
             throw new ExcepcionDeNegocio("No se puede eliminar un producto que tiene saldo");
+        }
+        if (transaccionRepositoryPort.existePorProductoId(existente.getId())) {
+            throw new ExcepcionDeNegocio(
+                    "No se puede eliminar un producto que tiene movimientos registrados");
         }
 
         productoRepositoryPort.eliminarPorId(existente.getId());

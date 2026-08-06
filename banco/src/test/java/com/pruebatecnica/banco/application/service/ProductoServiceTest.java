@@ -8,6 +8,7 @@ import com.pruebatecnica.banco.domain.model.Producto;
 import com.pruebatecnica.banco.domain.model.TipoCuenta;
 import com.pruebatecnica.banco.domain.port.out.ClienteRepositoryPort;
 import com.pruebatecnica.banco.domain.port.out.ProductoRepositoryPort;
+import com.pruebatecnica.banco.domain.port.out.TransaccionRepositoryPort;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -37,6 +38,9 @@ class ProductoServiceTest {
 
     @Mock
     private ClienteRepositoryPort clienteRepositoryPort;
+
+    @Mock
+    private TransaccionRepositoryPort transaccionRepositoryPort;
 
     @InjectMocks
     private ProductoService productoService;
@@ -262,14 +266,29 @@ class ProductoServiceTest {
     }
 
     @Test
-    @DisplayName("Elimina el producto cuando no tiene saldo")
+    @DisplayName("Elimina el producto cuando no tiene saldo ni movimientos")
     void eliminaElProductoSinSaldo() {
         given(productoRepositoryPort.buscarPorId(10L))
                 .willReturn(Optional.of(guardado(TipoCuenta.AHORROS, BigDecimal.ZERO, EstadoCuenta.ACTIVA)));
+        given(transaccionRepositoryPort.existePorProductoId(10L)).willReturn(false);
 
         productoService.eliminar(10L);
 
         verify(productoRepositoryPort, times(1)).eliminarPorId(10L);
+    }
+
+    @Test
+    @DisplayName("No elimina el producto cuando ya tiene movimientos registrados")
+    void noEliminaElProductoConMovimientos() {
+        given(productoRepositoryPort.buscarPorId(10L))
+                .willReturn(Optional.of(guardado(TipoCuenta.AHORROS, BigDecimal.ZERO, EstadoCuenta.ACTIVA)));
+        given(transaccionRepositoryPort.existePorProductoId(10L)).willReturn(true);
+
+        assertThatThrownBy(() -> productoService.eliminar(10L))
+                .isInstanceOf(ExcepcionDeNegocio.class)
+                .hasMessageContaining("movimientos registrados");
+
+        verify(productoRepositoryPort, never()).eliminarPorId(any());
     }
 
     @Test
