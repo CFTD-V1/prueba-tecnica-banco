@@ -1,11 +1,19 @@
+/*
+ * Paleta: rojo, blanco, negro y gris.
+ * El negro es el color de las acciones principales y el rojo queda reservado
+ * como acento y para las acciones destructivas, de modo que no compitan entre sí.
+ */
 :root {
-  --color-texto: #22303f;
-  --color-tenue: #6b7a8c;
-  --color-borde: #d8dfe7;
-  --color-fondo: #f4f6f9;
-  --color-principal: #1f3a5f;
-  --color-error: #b3261e;
-  --color-exito: #1c6b3f;
+  --negro: #141414;
+  --negro-suave: #262626;
+  --rojo: #b3121b;
+  --rojo-oscuro: #8c0e15;
+  --gris-texto: #2b2b2b;
+  --gris-tenue: #6e6e6e;
+  --gris-borde: #dcdcdc;
+  --gris-fondo: #f4f4f4;
+  --gris-claro: #ececec;
+  --blanco: #fff;
 }
 
 * {
@@ -14,8 +22,8 @@
 
 body {
   margin: 0;
-  background: var(--color-fondo);
-  color: var(--color-texto);
+  background: var(--gris-fondo);
+  color: var(--gris-texto);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   font-size: 15px;
   line-height: 1.5;
@@ -29,6 +37,8 @@ body {
 h1 {
   font-size: 1.4rem;
   margin: 0;
+  color: var(--negro);
+  letter-spacing: -0.01em;
 }
 
 /* --- Encabezado de cada pantalla --- */
@@ -39,21 +49,23 @@ h1 {
   gap: 1rem;
   flex-wrap: wrap;
   margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--negro);
 }
 
 /* --- Tarjeta --- */
 .tarjeta {
-  background: #fff;
-  border: 1px solid var(--color-borde);
-  border-radius: 6px;
+  background: var(--blanco);
+  border: 1px solid var(--gris-borde);
+  border-radius: 4px;
   padding: 1.25rem;
 }
 
 /* --- Tabla --- */
 .tabla-contenedor {
-  background: #fff;
-  border: 1px solid var(--color-borde);
-  border-radius: 6px;
+  background: var(--blanco);
+  border: 1px solid var(--gris-borde);
+  border-radius: 4px;
   overflow-x: auto;
 }
 
@@ -67,14 +79,17 @@ th,
 td {
   text-align: left;
   padding: 0.7rem 0.9rem;
-  border-bottom: 1px solid var(--color-borde);
+  border-bottom: 1px solid var(--gris-borde);
   white-space: nowrap;
 }
 
 th {
-  background: #eef2f7;
+  background: var(--negro);
+  color: var(--blanco);
   font-weight: 600;
-  color: #46586b;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 tbody tr:last-child td {
@@ -82,7 +97,7 @@ tbody tr:last-child td {
 }
 
 tbody tr:hover {
-  background: #f8fafc;
+  background: var(--gris-fondo);
 }
 
 td.numero,
@@ -95,35 +110,47 @@ th.numero {
 .boton {
   display: inline-block;
   border: 1px solid transparent;
-  border-radius: 4px;
+  border-radius: 3px;
   padding: 0.5rem 1rem;
   font-size: 0.92rem;
   font-family: inherit;
   cursor: pointer;
   text-decoration: none;
-  background: var(--color-principal);
-  color: #fff;
+  background: var(--negro);
+  color: var(--blanco);
+  transition: background 0.15s ease;
 }
 
 .boton:hover:not(:disabled) {
-  filter: brightness(1.15);
+  background: var(--negro-suave);
 }
 
 .boton:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
 .boton--secundario {
-  background: #fff;
-  border-color: var(--color-borde);
-  color: var(--color-texto);
+  background: var(--blanco);
+  border-color: var(--gris-borde);
+  color: var(--gris-texto);
+}
+
+.boton--secundario:hover:not(:disabled) {
+  background: var(--gris-claro);
+  border-color: #c4c4c4;
 }
 
 .boton--peligro {
-  background: #fff;
-  border-color: #e3b5b2;
-  color: var(--color-error);
+  background: var(--blanco);
+  border-color: #e0b3b6;
+  color: var(--rojo);
+}
+
+.boton--peligro:hover:not(:disabled) {
+  background: var(--rojo);
+  border-color: var(--rojo);
+  color: var(--blanco);
 }
 
 .boton--pequeno {
@@ -140,35 +167,42 @@ th.numero {
 }
 
 .campo > label {
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   font-weight: 600;
-  color: #46586b;
+  color: var(--negro);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 input,
 select {
   font: inherit;
   padding: 0.5rem 0.6rem;
-  border: 1px solid var(--color-borde);
-  border-radius: 4px;
-  background: #fff;
+  border: 1px solid var(--gris-borde);
+  border-radius: 3px;
+  background: var(--blanco);
   color: inherit;
   width: 100%;
 }
 
 input:focus,
 select:focus {
-  outline: 2px solid #a9c2e0;
+  outline: 2px solid var(--negro);
   outline-offset: -1px;
 }
 
 .campo--invalido input,
 .campo--invalido select {
-  border-color: var(--color-error);
+  border-color: var(--rojo);
+}
+
+.campo--invalido input:focus,
+.campo--invalido select:focus {
+  outline-color: var(--rojo);
 }
 
 .campo__error {
-  color: var(--color-error);
+  color: var(--rojo);
   font-size: 0.82rem;
 }
 
@@ -187,64 +221,74 @@ select:focus {
 
 /* --- Avisos --- */
 .aviso {
-  border-radius: 4px;
+  border-radius: 3px;
   padding: 0.7rem 0.9rem;
   margin-bottom: 1rem;
   font-size: 0.92rem;
+  border-left: 4px solid;
 }
 
 .aviso--error {
-  background: #fdecea;
-  border: 1px solid #f3c2bd;
-  color: var(--color-error);
+  background: #fbeaeb;
+  border-color: var(--rojo);
+  color: var(--rojo-oscuro);
 }
 
 .aviso--exito {
-  background: #e8f5ec;
-  border: 1px solid #b7ddc5;
-  color: var(--color-exito);
+  background: var(--gris-claro);
+  border-color: var(--negro);
+  color: var(--negro);
 }
 
 .vacio {
   padding: 2rem;
   text-align: center;
-  color: var(--color-tenue);
+  color: var(--gris-tenue);
 }
 
 /* --- Etiquetas de estado --- */
 .etiqueta {
   display: inline-block;
   padding: 0.15rem 0.55rem;
-  border-radius: 999px;
-  font-size: 0.78rem;
+  border-radius: 2px;
+  font-size: 0.76rem;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border: 1px solid;
 }
 
 .etiqueta--activa {
-  background: #e2f3e8;
-  color: var(--color-exito);
+  background: var(--negro);
+  border-color: var(--negro);
+  color: var(--blanco);
 }
 
 .etiqueta--inactiva {
-  background: #fdf1dd;
-  color: #8a5b13;
+  background: var(--blanco);
+  border-color: var(--gris-tenue);
+  color: var(--gris-tenue);
 }
 
 .etiqueta--cancelada {
-  background: #eceef1;
-  color: #5c6b7a;
+  background: var(--gris-claro);
+  border-color: var(--gris-borde);
+  color: var(--gris-tenue);
+  text-decoration: line-through;
 }
 
 .etiqueta--credito {
-  background: #e2f3e8;
-  color: var(--color-exito);
+  background: var(--blanco);
+  border-color: var(--negro);
+  color: var(--negro);
 }
 
 .etiqueta--debito {
-  background: #fdecea;
-  color: var(--color-error);
+  background: var(--rojo);
+  border-color: var(--rojo);
+  color: var(--blanco);
 }
 
 .texto-tenue {
-  color: var(--color-tenue);
+  color: var(--gris-tenue);
 }

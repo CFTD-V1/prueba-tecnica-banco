@@ -12,8 +12,12 @@ import { TIPOS_IDENTIFICACION, TipoIdentificacion } from '../../../core/modelos/
 import { ClienteService } from '../../../core/servicios/cliente.service';
 import { mensajeDeError } from '../../../core/servicios/mensaje-error';
 
-/** Misma regla que aplica el backend: el cliente debe ser mayor de edad. */
-function mayorDeEdad(control: AbstractControl): ValidationErrors | null {
+/**
+ * Misma regla que aplica el backend: el cliente debe ser mayor de edad.
+ * Validar también aquí evita un viaje al servidor para un dato que ya se sabe
+ * inválido; la garantía sigue estando en el backend.
+ */
+export function mayorDeEdad(control: AbstractControl): ValidationErrors | null {
   if (!control.value) {
     return null;
   }
