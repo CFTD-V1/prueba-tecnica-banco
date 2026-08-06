@@ -111,6 +111,16 @@ class TransaccionControllerTest {
     }
 
     @Test
+    @DisplayName("POST /api/transacciones/consignaciones responde 400 cuando el monto trae mas de dos decimales")
+    void responde400CuandoElMontoTraeMasDeDosDecimales() throws Exception {
+        mockMvc.perform(post("/api/transacciones/consignaciones")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"productoId\": 1, \"monto\": 100.999}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errores.monto").exists());
+    }
+
+    @Test
     @DisplayName("POST /api/transacciones/consignaciones responde 404 cuando la cuenta no existe")
     void responde404CuandoLaCuentaNoExiste() throws Exception {
         given(transaccionCasosDeUso.consignar(eq(1L), any(BigDecimal.class), any()))

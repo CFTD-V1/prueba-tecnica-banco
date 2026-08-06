@@ -1,5 +1,11 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 
@@ -8,6 +14,19 @@ import { Transaccion, TipoTransaccion } from '../../../core/modelos/transaccion'
 import { mensajeDeError } from '../../../core/servicios/mensaje-error';
 import { ProductoService } from '../../../core/servicios/producto.service';
 import { TransaccionService } from '../../../core/servicios/transaccion.service';
+
+/**
+ * El dinero se guarda con dos decimales. Aceptar más obligaría a redondear, y en
+ * un movimiento financiero redondear en silencio no es aceptable.
+ */
+export function maximoDosDecimales(control: AbstractControl): ValidationErrors | null {
+  if (control.value === null || control.value === '') {
+    return null;
+  }
+
+  const decimales = String(control.value).split('.')[1];
+  return decimales && decimales.length > 2 ? { demasiadosDecimales: true } : null;
+}
 
 @Component({
   selector: 'app-formulario-movimiento',
@@ -35,7 +54,10 @@ export class FormularioMovimiento {
   protected readonly formulario = this.fb.nonNullable.group({
     productoId: [null as number | null, Validators.required],
     productoDestinoId: [null as number | null],
-    monto: [null as number | null, [Validators.required, Validators.min(0.01)]],
+    monto: [
+      null as number | null,
+      [Validators.required, Validators.min(0.01), maximoDosDecimales],
+    ],
     descripcion: [''],
   });
 
