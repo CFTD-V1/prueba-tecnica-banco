@@ -11,6 +11,13 @@ public interface ProductoRepositoryPort {
 
     Optional<Producto> buscarPorId(Long id);
 
+    /**
+     * Igual que buscarPorId, pero impide que otra transaccion modifique el producto
+     * hasta que la actual termine. Se usa al mover saldos para evitar que dos
+     * movimientos simultaneos se pisen el saldo.
+     */
+    Optional<Producto> buscarPorIdConBloqueo(Long id);
+
     List<Producto> listarTodos();
 
     List<Producto> listarPorClienteId(Long clienteId);
