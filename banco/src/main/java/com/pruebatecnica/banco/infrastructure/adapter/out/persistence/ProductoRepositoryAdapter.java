@@ -32,6 +32,11 @@ public class ProductoRepositoryAdapter implements ProductoRepositoryPort {
     }
 
     @Override
+    public Optional<Producto> buscarPorIdConBloqueo(Long id) {
+        return productoJpaRepository.buscarPorIdConBloqueo(id).map(this::aDominio);
+    }
+
+    @Override
     public List<Producto> listarTodos() {
         return productoJpaRepository.findAll()
                 .stream()
