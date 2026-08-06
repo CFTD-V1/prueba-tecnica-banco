@@ -1,1 +1,57 @@
-<p>formulario-producto works!</p>
+<div class="encabezado">
+  <h1>Nueva cuenta</h1>
+  <a routerLink="/productos" class="boton boton--secundario">Volver</a>
+</div>
+
+@if (error()) {
+  <p class="aviso aviso--error">{{ error() }}</p>
+}
+
+<form class="tarjeta" [formGroup]="formulario" (ngSubmit)="guardar()">
+  <div class="rejilla">
+    <div class="campo" [class.campo--invalido]="invalido('tipoCuenta')">
+      <label for="tipoCuenta">Tipo de cuenta</label>
+      <select id="tipoCuenta" formControlName="tipoCuenta">
+        @for (tipo of tiposCuenta; track tipo.valor) {
+          <option [value]="tipo.valor">{{ tipo.etiqueta }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="campo" [class.campo--invalido]="invalido('clienteId')">
+      <label for="clienteId">Titular</label>
+      <select id="clienteId" formControlName="clienteId">
+        <option [ngValue]="null">Seleccione un cliente</option>
+        @for (cliente of clientes(); track cliente.id) {
+          <option [ngValue]="cliente.id">
+            {{ cliente.nombres }} {{ cliente.apellido }} - {{ cliente.numeroIdentificacion }}
+          </option>
+        }
+      </select>
+      @if (invalido('clienteId')) {
+        <span class="campo__error">Debe seleccionar el cliente titular de la cuenta.</span>
+      }
+    </div>
+
+    <div class="campo">
+      <label for="exentaGmf">Exenta del GMF</label>
+      <select id="exentaGmf" formControlName="exentaGmf">
+        <option [ngValue]="false">No</option>
+        <option [ngValue]="true">Sí</option>
+      </select>
+    </div>
+  </div>
+
+  <p class="texto-tenue">
+    La cuenta se abre en $0 y en estado activo. El número se genera automáticamente: diez
+    dígitos que inician en 53 para ahorros y en 33 para corriente. Para tener saldo hay que
+    registrar una consignación.
+  </p>
+
+  <div class="acciones">
+    <button type="submit" class="boton" [disabled]="guardando()">
+      {{ guardando() ? 'Creando...' : 'Crear cuenta' }}
+    </button>
+    <a routerLink="/productos" class="boton boton--secundario">Cancelar</a>
+  </div>
+</form>

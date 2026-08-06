@@ -1,1 +1,103 @@
-<p>lista-productos works!</p>
+<div class="encabezado">
+  <h1>Productos</h1>
+  <a routerLink="/productos/nuevo" class="boton">Nueva cuenta</a>
+</div>
+
+@if (error()) {
+  <p class="aviso aviso--error">{{ error() }}</p>
+}
+@if (aviso()) {
+  <p class="aviso aviso--exito">{{ aviso() }}</p>
+}
+
+<div class="campo" style="max-width: 320px">
+  <label for="filtroCliente">Filtrar por cliente</label>
+  <select id="filtroCliente" (change)="filtrar($any($event.target).value)">
+    <option value="">Todos los clientes</option>
+    @for (cliente of clientes(); track cliente.id) {
+      <option [value]="cliente.id">{{ cliente.nombres }} {{ cliente.apellido }}</option>
+    }
+  </select>
+</div>
+
+@if (cargando()) {
+  <p class="vacio">Cargando productos...</p>
+} @else if (productos().length === 0) {
+  <div class="tabla-contenedor">
+    <p class="vacio">No hay productos para mostrar.</p>
+  </div>
+} @else {
+  <div class="tabla-contenedor">
+    <table>
+      <thead>
+        <tr>
+          <th>Número de cuenta</th>
+          <th>Tipo</th>
+          <th>Titular</th>
+          <th>Estado</th>
+          <th class="numero">Saldo</th>
+          <th>GMF</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (producto of productos(); track producto.id) {
+          <tr>
+            <td>{{ producto.numeroCuenta }}</td>
+            <td>{{ producto.tipoCuenta }}</td>
+            <td>{{ titular(producto) }}</td>
+            <td><span [class]="claseEstado(producto.estado)">{{ producto.estado }}</span></td>
+            <td class="numero">{{ producto.saldo | currency: 'COP' : 'symbol-narrow' : '1.2-2' }}</td>
+            <td>
+              <button
+                type="button"
+                class="boton boton--secundario boton--pequeno"
+                (click)="alternarGmf(producto)"
+              >
+                {{ producto.exentaGmf ? 'Exenta' : 'No exenta' }}
+              </button>
+            </td>
+            <td>
+              <div class="acciones">
+                @if (producto.estado === 'ACTIVA') {
+                  <button
+                    type="button"
+                    class="boton boton--secundario boton--pequeno"
+                    (click)="cambiarEstado(producto, 'INACTIVA')"
+                  >
+                    Inactivar
+                  </button>
+                }
+                @if (producto.estado === 'INACTIVA') {
+                  <button
+                    type="button"
+                    class="boton boton--secundario boton--pequeno"
+                    (click)="cambiarEstado(producto, 'ACTIVA')"
+                  >
+                    Activar
+                  </button>
+                }
+                @if (producto.estado !== 'CANCELADA') {
+                  <button
+                    type="button"
+                    class="boton boton--peligro boton--pequeno"
+                    (click)="cambiarEstado(producto, 'CANCELADA')"
+                  >
+                    Cancelar
+                  </button>
+                }
+                <button
+                  type="button"
+                  class="boton boton--peligro boton--pequeno"
+                  (click)="eliminar(producto)"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
