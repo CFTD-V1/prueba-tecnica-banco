@@ -613,8 +613,8 @@ que la ejecución completa no depende de que el contenedor esté levantado.
 
 ## Control de versiones
 
-Repositorio único en GitHub, con estrategia **Git Flow** y avance evidenciado mediante commits
-y push a lo largo del desarrollo.
+Repositorio único en GitHub, con estrategia basada en **Git Flow** y avance evidenciado
+mediante commits y push a lo largo del desarrollo.
 
 | Rama | Propósito |
 | --- | --- |
@@ -623,13 +623,23 @@ y push a lo largo del desarrollo.
 | `feature/clientes` | Módulo de clientes |
 | `feature/productos` | Módulo de productos |
 | `feature/transacciones` | Módulo de transacciones |
+| `feature/docker` | Empaquetado de la aplicación en contenedor |
+| `feature/cors` | Configuración de CORS |
 | `fix/revision-codigo` | Correcciones tras una revisión del código |
 | `docs/documentacion` | Documentación y scripts de base de datos |
+| `docs/actualizar-pruebas` | Ajuste de documentación |
 
 Cada rama de trabajo se integra a `develop` con `merge --no-ff`, de modo que el historial
-conserva visible el agrupamiento de cada funcionalidad. Los mensajes siguen la convención
-*Conventional Commits* (`feat`, `fix`, `test`, `chore`, `refactor`, `docs`), con commits
-pequeños y de un solo propósito.
+conserva visible el agrupamiento de cada funcionalidad, y `develop` se lleva a `main`
+mediante Pull Request cuando el conjunto queda estable.
+
+Durante las primeras entregas algunas ramas de trabajo se publicaron con Pull Request
+directo a `main` para dejar constancia del avance; por eso el historial muestra esos dos
+caminos. A partir de la integración de `develop` en `main` (Pull Request #4) el flujo quedó
+unificado en la ruta descrita arriba.
+
+Los mensajes siguen la convención *Conventional Commits* (`feat`, `fix`, `test`, `chore`,
+`refactor`, `docs`), con commits pequeños y de un solo propósito.
 
 ---
 
