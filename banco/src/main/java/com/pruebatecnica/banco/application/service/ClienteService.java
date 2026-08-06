@@ -2,12 +2,12 @@ package com.pruebatecnica.banco.application.service;
 
 import com.pruebatecnica.banco.domain.exception.ExcepcionDeNegocio;
 import com.pruebatecnica.banco.domain.exception.ExcepcionDeRecursoNoEncontrado;
+import com.pruebatecnica.banco.domain.model.FechaSistema;
 import com.pruebatecnica.banco.domain.model.Cliente;
 import com.pruebatecnica.banco.domain.port.in.ClienteCasosDeUso;
 import com.pruebatecnica.banco.domain.port.out.ClienteRepositoryPort;
 import com.pruebatecnica.banco.domain.port.out.ProductoRepositoryPort;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -36,8 +36,8 @@ public class ClienteService implements ClienteCasosDeUso {
         }
 
         cliente.setId(null);
-        cliente.setFechaCreacion(LocalDateTime.now());
-        cliente.setFechaModificacion(LocalDateTime.now());
+        cliente.setFechaCreacion(FechaSistema.ahora());
+        cliente.setFechaModificacion(FechaSistema.ahora());
 
         return clienteRepositoryPort.guardar(cliente);
     }
@@ -77,7 +77,7 @@ public class ClienteService implements ClienteCasosDeUso {
         existente.setFechaNacimiento(cliente.getFechaNacimiento());
 
         existente.validar();
-        existente.setFechaModificacion(LocalDateTime.now());
+        existente.setFechaModificacion(FechaSistema.ahora());
 
         return clienteRepositoryPort.guardar(existente);
     }

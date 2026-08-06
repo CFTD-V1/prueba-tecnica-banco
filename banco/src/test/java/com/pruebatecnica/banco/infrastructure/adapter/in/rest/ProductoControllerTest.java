@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -27,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -41,7 +43,6 @@ class ProductoControllerTest {
             {
               "tipoCuenta": "AHORROS",
               "clienteId": 1,
-              "saldoInicial": 100000,
               "exentaGmf": false
             }
             """;
@@ -128,15 +129,18 @@ class ProductoControllerTest {
     }
 
     @Test
-    @DisplayName("POST /api/productos responde 400 cuando el saldo inicial es negativo")
-    void responde400CuandoElSaldoInicialEsNegativo() throws Exception {
-        String cuerpoNegativo = CUERPO_VALIDO.replace("100000", "-5000");
+    @DisplayName("POST /api/productos ignora cualquier saldo enviado: la cuenta abre en cero")
+    void ignoraElSaldoEnviadoAlCrear() throws Exception {
+        given(productoCasosDeUso.crear(any(Producto.class))).willReturn(productoGuardado());
 
         mockMvc.perform(post("/api/productos")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(cuerpoNegativo))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errores.saldoInicial").exists());
+                        .content("{\"tipoCuenta\": \"AHORROS\", \"clienteId\": 1, \"saldoInicial\": 999999}"))
+                .andExpect(status().isCreated());
+
+        ArgumentCaptor<Producto> capturado = ArgumentCaptor.forClass(Producto.class);
+        verify(productoCasosDeUso).crear(capturado.capture());
+        assertThat(capturado.getValue().getSaldo()).isNull();
     }
 
     @Test

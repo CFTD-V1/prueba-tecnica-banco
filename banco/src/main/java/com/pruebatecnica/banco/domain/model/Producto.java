@@ -47,13 +47,15 @@ public class Producto {
         validarSaldoDeAhorros();
     }
 
-    /** Estado con el que nace una cuenta recién creada. */
+    /**
+     * Estado con el que nace una cuenta recién creada: activa y en $0.
+     * El saldo solo se mueve mediante transacciones, de modo que siempre queda
+     * respaldado por los movimientos del estado de cuenta.
+     */
     public void inicializar() {
-        if (saldo == null) {
-            saldo = BigDecimal.ZERO;
-        }
         this.estado = EstadoCuenta.ACTIVA;
-        this.saldoDisponible = this.saldo;
+        this.saldo = BigDecimal.ZERO;
+        this.saldoDisponible = BigDecimal.ZERO;
     }
 
     /** Genera un número de cuenta de 10 dígitos con el prefijo del tipo de cuenta. */

@@ -45,11 +45,10 @@ class ProductoServiceTest {
     @InjectMocks
     private ProductoService productoService;
 
-    private Producto solicitud(TipoCuenta tipoCuenta, BigDecimal saldo) {
+    private Producto solicitud(TipoCuenta tipoCuenta) {
         return Producto.builder()
                 .tipoCuenta(tipoCuenta)
                 .clienteId(1L)
-                .saldo(saldo)
                 .build();
     }
 
@@ -82,12 +81,12 @@ class ProductoServiceTest {
         given(productoRepositoryPort.existePorNumeroCuenta(anyString())).willReturn(false);
         devuelveLoQueSeGuarda();
 
-        Producto resultado = productoService.crear(solicitud(TipoCuenta.AHORROS, new BigDecimal("100000")));
+        Producto resultado = productoService.crear(solicitud(TipoCuenta.AHORROS));
 
         assertThat(resultado.getNumeroCuenta()).hasSize(10).startsWith("53").containsOnlyDigits();
         assertThat(resultado.getEstado()).isEqualTo(EstadoCuenta.ACTIVA);
-        assertThat(resultado.getSaldo()).isEqualByComparingTo("100000");
-        assertThat(resultado.getSaldoDisponible()).isEqualByComparingTo("100000");
+        assertThat(resultado.getSaldo()).isEqualByComparingTo("0");
+        assertThat(resultado.getSaldoDisponible()).isEqualByComparingTo("0");
         assertThat(resultado.getFechaCreacion()).isNotNull();
         assertThat(resultado.getFechaModificacion()).isNotNull();
         verify(productoRepositoryPort, times(1)).guardar(any(Producto.class));
@@ -100,7 +99,7 @@ class ProductoServiceTest {
         given(productoRepositoryPort.existePorNumeroCuenta(anyString())).willReturn(false);
         devuelveLoQueSeGuarda();
 
-        Producto resultado = productoService.crear(solicitud(TipoCuenta.CORRIENTE, BigDecimal.ZERO));
+        Producto resultado = productoService.crear(solicitud(TipoCuenta.CORRIENTE));
 
         assertThat(resultado.getNumeroCuenta()).hasSize(10).startsWith("33").containsOnlyDigits();
         assertThat(resultado.getEstado()).isEqualTo(EstadoCuenta.ACTIVA);
@@ -111,7 +110,7 @@ class ProductoServiceTest {
     void rechazaElProductoCuandoElClienteNoExiste() {
         given(clienteRepositoryPort.buscarPorId(1L)).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> productoService.crear(solicitud(TipoCuenta.AHORROS, BigDecimal.ZERO)))
+        assertThatThrownBy(() -> productoService.crear(solicitud(TipoCuenta.AHORROS)))
                 .isInstanceOf(ExcepcionDeRecursoNoEncontrado.class)
                 .hasMessageContaining("No existe un cliente");
 
@@ -134,15 +133,22 @@ class ProductoServiceTest {
     }
 
     @Test
-    @DisplayName("Rechaza una cuenta de ahorros con saldo inicial negativo")
-    void rechazaCuentaDeAhorrosConSaldoNegativo() {
+    @DisplayName("La cuenta se abre en cero aunque se envie un saldo")
+    void laCuentaSeAbreEnCeroAunqueSeEnvieSaldo() {
         clienteExiste();
+        given(productoRepositoryPort.existePorNumeroCuenta(anyString())).willReturn(false);
+        devuelveLoQueSeGuarda();
 
-        assertThatThrownBy(() -> productoService.crear(solicitud(TipoCuenta.AHORROS, new BigDecimal("-1"))))
-                .isInstanceOf(ExcepcionDeNegocio.class)
-                .hasMessageContaining("menor a $0");
+        Producto conSaldo = Producto.builder()
+                .tipoCuenta(TipoCuenta.AHORROS)
+                .clienteId(1L)
+                .saldo(new BigDecimal("999999"))
+                .build();
 
-        verify(productoRepositoryPort, never()).guardar(any(Producto.class));
+        Producto resultado = productoService.crear(conSaldo);
+
+        assertThat(resultado.getSaldo()).isEqualByComparingTo("0");
+        assertThat(resultado.getSaldoDisponible()).isEqualByComparingTo("0");
     }
 
     @Test
@@ -153,7 +159,7 @@ class ProductoServiceTest {
                 .willReturn(true, true, false);
         devuelveLoQueSeGuarda();
 
-        Producto resultado = productoService.crear(solicitud(TipoCuenta.AHORROS, BigDecimal.ZERO));
+        Producto resultado = productoService.crear(solicitud(TipoCuenta.AHORROS));
 
         assertThat(resultado.getNumeroCuenta()).hasSize(10);
         verify(productoRepositoryPort, times(3)).existePorNumeroCuenta(anyString());
@@ -166,7 +172,7 @@ class ProductoServiceTest {
         clienteExiste();
         given(productoRepositoryPort.existePorNumeroCuenta(anyString())).willReturn(true);
 
-        assertThatThrownBy(() -> productoService.crear(solicitud(TipoCuenta.AHORROS, BigDecimal.ZERO)))
+        assertThatThrownBy(() -> productoService.crear(solicitud(TipoCuenta.AHORROS)))
                 .isInstanceOf(ExcepcionDeNegocio.class)
                 .hasMessageContaining("número de cuenta único");
 

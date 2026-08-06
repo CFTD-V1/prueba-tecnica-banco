@@ -2,6 +2,7 @@ package com.pruebatecnica.banco.application.service;
 
 import com.pruebatecnica.banco.domain.exception.ExcepcionDeNegocio;
 import com.pruebatecnica.banco.domain.exception.ExcepcionDeRecursoNoEncontrado;
+import com.pruebatecnica.banco.domain.model.FechaSistema;
 import com.pruebatecnica.banco.domain.model.EstadoCuenta;
 import com.pruebatecnica.banco.domain.model.Producto;
 import com.pruebatecnica.banco.domain.port.in.ProductoCasosDeUso;
@@ -10,7 +11,6 @@ import com.pruebatecnica.banco.domain.port.out.ProductoRepositoryPort;
 import com.pruebatecnica.banco.domain.port.out.TransaccionRepositoryPort;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -43,8 +43,8 @@ public class ProductoService implements ProductoCasosDeUso {
         producto.validar();
         asignarNumeroDeCuentaUnico(producto);
 
-        producto.setFechaCreacion(LocalDateTime.now());
-        producto.setFechaModificacion(LocalDateTime.now());
+        producto.setFechaCreacion(FechaSistema.ahora());
+        producto.setFechaModificacion(FechaSistema.ahora());
 
         return productoRepositoryPort.guardar(producto);
     }
@@ -80,7 +80,7 @@ public class ProductoService implements ProductoCasosDeUso {
 
         existente.setExentaGmf(producto.isExentaGmf());
         existente.validar();
-        existente.setFechaModificacion(LocalDateTime.now());
+        existente.setFechaModificacion(FechaSistema.ahora());
 
         return productoRepositoryPort.guardar(existente);
     }
@@ -91,7 +91,7 @@ public class ProductoService implements ProductoCasosDeUso {
         Producto existente = obtenerPorId(id);
 
         existente.cambiarEstado(estado);
-        existente.setFechaModificacion(LocalDateTime.now());
+        existente.setFechaModificacion(FechaSistema.ahora());
 
         return productoRepositoryPort.guardar(existente);
     }

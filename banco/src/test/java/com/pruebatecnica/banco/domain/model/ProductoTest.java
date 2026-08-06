@@ -12,14 +12,20 @@ import org.junit.jupiter.api.Test;
 
 class ProductoTest {
 
+    /**
+     * Construye una cuenta lista para operar. La cuenta nace en $0, asi que el saldo
+     * de partida se logra acreditando, que es como ocurre en la aplicacion real.
+     */
     private Producto cuenta(TipoCuenta tipoCuenta, BigDecimal saldo) {
         Producto producto = Producto.builder()
                 .tipoCuenta(tipoCuenta)
                 .clienteId(1L)
-                .saldo(saldo)
                 .build();
         producto.inicializar();
         producto.asignarNumeroDeCuenta();
+        if (saldo.compareTo(BigDecimal.ZERO) > 0) {
+            producto.acreditar(saldo);
+        }
         return producto;
     }
 
@@ -44,11 +50,27 @@ class ProductoTest {
     }
 
     @Test
-    @DisplayName("Una cuenta nace activa")
-    void laCuentaNaceActiva() {
+    @DisplayName("Una cuenta nace activa y en saldo cero")
+    void laCuentaNaceActivaYEnCero() {
         Producto producto = cuenta(TipoCuenta.AHORROS, BigDecimal.ZERO);
 
         assertThat(producto.getEstado()).isEqualTo(EstadoCuenta.ACTIVA);
+        assertThat(producto.getSaldo()).isEqualByComparingTo("0");
+        assertThat(producto.getSaldoDisponible()).isEqualByComparingTo("0");
+    }
+
+    @Test
+    @DisplayName("Un saldo enviado al crear se ignora: la cuenta siempre abre en cero")
+    void elSaldoEnviadoAlCrearSeIgnora() {
+        Producto producto = Producto.builder()
+                .tipoCuenta(TipoCuenta.AHORROS)
+                .clienteId(1L)
+                .saldo(new BigDecimal("999999"))
+                .build();
+
+        producto.inicializar();
+
+        assertThat(producto.getSaldo()).isEqualByComparingTo("0");
     }
 
     @Test
