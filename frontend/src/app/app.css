@@ -1,0 +1,51 @@
+.cabecera {
+  background: var(--negro);
+  color: var(--blanco);
+  /* La línea roja es el único acento de color de la cabecera. */
+  border-bottom: 3px solid var(--rojo);
+}
+
+.cabecera__interior {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  min-height: 3.5rem;
+  flex-wrap: wrap;
+}
+
+.cabecera__titulo {
+  font-size: 1.05rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.menu {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.menu__enlace {
+  color: #bdbdbd;
+  text-decoration: none;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.92rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid transparent;
+}
+
+.menu__enlace:hover {
+  color: var(--blanco);
+}
+
+.menu__enlace--activo {
+  color: var(--blanco);
+  font-weight: 600;
+  border-bottom-color: var(--rojo);
+}
+
+.contenido {
+  padding-block: 1.75rem 3rem;
+}

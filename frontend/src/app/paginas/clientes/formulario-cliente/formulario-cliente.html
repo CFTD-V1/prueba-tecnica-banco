@@ -1,0 +1,70 @@
+<div class="encabezado">
+  <h1>{{ editando ? 'Editar cliente' : 'Nuevo cliente' }}</h1>
+  <a routerLink="/clientes" class="boton boton--secundario">Volver</a>
+</div>
+
+@if (error()) {
+  <p class="aviso aviso--error">{{ error() }}</p>
+}
+
+<form class="tarjeta" [formGroup]="formulario" (ngSubmit)="guardar()">
+  <div class="rejilla">
+    <div class="campo" [class.campo--invalido]="invalido('tipoIdentificacion')">
+      <label for="tipoIdentificacion">Tipo de identificación</label>
+      <select id="tipoIdentificacion" formControlName="tipoIdentificacion">
+        @for (tipo of tiposIdentificacion; track tipo.valor) {
+          <option [value]="tipo.valor">{{ tipo.etiqueta }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="campo" [class.campo--invalido]="invalido('numeroIdentificacion')">
+      <label for="numeroIdentificacion">Número de identificación</label>
+      <input id="numeroIdentificacion" formControlName="numeroIdentificacion" maxlength="20" />
+      @if (invalido('numeroIdentificacion')) {
+        <span class="campo__error">El número de identificación es obligatorio.</span>
+      }
+    </div>
+
+    <div class="campo" [class.campo--invalido]="invalido('nombres')">
+      <label for="nombres">Nombres</label>
+      <input id="nombres" formControlName="nombres" maxlength="100" />
+      @if (invalido('nombres')) {
+        <span class="campo__error">Los nombres deben tener al menos 2 caracteres.</span>
+      }
+    </div>
+
+    <div class="campo" [class.campo--invalido]="invalido('apellido')">
+      <label for="apellido">Apellido</label>
+      <input id="apellido" formControlName="apellido" maxlength="100" />
+      @if (invalido('apellido')) {
+        <span class="campo__error">El apellido debe tener al menos 2 caracteres.</span>
+      }
+    </div>
+
+    <div class="campo" [class.campo--invalido]="invalido('correo')">
+      <label for="correo">Correo electrónico</label>
+      <input id="correo" type="email" formControlName="correo" maxlength="150" />
+      @if (invalido('correo')) {
+        <span class="campo__error">Escriba un correo con el formato nombre&#64;dominio.com.</span>
+      }
+    </div>
+
+    <div class="campo" [class.campo--invalido]="invalido('fechaNacimiento')">
+      <label for="fechaNacimiento">Fecha de nacimiento</label>
+      <input id="fechaNacimiento" type="date" formControlName="fechaNacimiento" />
+      @if (formulario.get('fechaNacimiento')?.hasError('menorDeEdad')) {
+        <span class="campo__error">El cliente debe ser mayor de edad.</span>
+      } @else if (invalido('fechaNacimiento')) {
+        <span class="campo__error">La fecha de nacimiento es obligatoria.</span>
+      }
+    </div>
+  </div>
+
+  <div class="acciones">
+    <button type="submit" class="boton" [disabled]="guardando()">
+      {{ guardando() ? 'Guardando...' : 'Guardar' }}
+    </button>
+    <a routerLink="/clientes" class="boton boton--secundario">Cancelar</a>
+  </div>
+</form>

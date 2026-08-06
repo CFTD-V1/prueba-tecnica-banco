@@ -636,7 +636,7 @@ cd banco
 ./mvnw test
 ```
 
-104 pruebas automáticas, distribuidas así:
+El backend tiene 104 pruebas automáticas, distribuidas así:
 
 | Clase | Pruebas | Tipo |
 | --- | --- | --- |
@@ -650,6 +650,10 @@ cd banco
 | `TransaccionControllerTest` | 13 | Capa web con `@WebMvcTest` |
 | `ConfiguracionCorsTest` | 3 | Cabeceras de CORS y rechazo de orígenes no autorizados |
 | `BancoApplicationTests` | 1 | Arranque del contexto de Spring |
+
+El front tiene 26 pruebas con Vitest (`cd frontend && npm test`): los tres servicios contra
+`HttpTestingController`, el traductor de errores del `ProblemDetail`, el validador de mayoría
+de edad y el componente raíz.
 
 El enunciado pide cobertura de las capas de servicio y de controlador; ambas están cubiertas,
 y adicionalmente se probó el modelo de dominio de forma aislada.
@@ -708,8 +712,71 @@ correspondiente.
 
 ## Front
 
-El front se desarrollará en **Angular** y consumirá esta API. A la fecha de este documento no
-está construido; el alcance entregado corresponde al proyecto backend.
+Aplicación en **Angular 22** que consume esta API. Está en la carpeta `frontend/`.
+
+### Cómo ejecutarlo
+
+Con el backend en marcha:
+
+```bash
+cd frontend
+npm install     # solo la primera vez
+npm start
+```
+
+Queda en `http://localhost:4200`, que es el origen autorizado en la configuración de CORS del
+backend. Si ese puerto está ocupado y Angular ofrece cambiarlo, hay que responder que no y
+liberar el puerto: desde otro origen el navegador bloqueará las peticiones a la API.
+
+```bash
+npm test        # pruebas unitarias
+npm run build   # compilación de producción en dist/
+```
+
+### Estructura
+
+```
+frontend/src/app/
+├── core/
+│   ├── modelos/         Tipos que reflejan los DTOs del backend
+│   └── servicios/       Un servicio por recurso, más el traductor de errores
+├── paginas/
+│   ├── clientes/        Lista y formulario de creación y edición
+│   ├── productos/       Lista con cambio de estado, y formulario de apertura
+│   └── transacciones/   Movimientos, estado de cuenta y registro de operaciones
+├── app.routes.ts        Enrutamiento con carga diferida
+└── app.ts               Componente raíz: barra de navegación y salida del router
+```
+
+### Decisiones y conceptos
+
+**Aplicación de una sola página (SPA).** El navegador descarga el HTML una única vez; a
+partir de ahí el enrutador de Angular intercambia los componentes sin recargar la página, y
+solo viajan datos en JSON contra la API.
+
+**Componentes independientes.** Cada pantalla es un componente autónomo que declara sus
+propias dependencias, sin módulos `NgModule`. Es el estilo por defecto desde Angular 17.
+
+**Enrutamiento con carga diferida.** En `app.routes.ts` cada ruta usa `loadComponent`, de modo
+que el código de una pantalla se descarga solo cuando el usuario entra en ella. En la
+compilación se ve un archivo independiente por pantalla.
+
+**Conexión con el backend.** Los componentes nunca usan `HttpClient` directamente: hablan con
+un servicio (`ClienteService`, `ProductoService`, `TransaccionService`) que concentra las
+llamadas. La dirección de la API sale de `src/environments/`, así que cambiar de entorno no
+implica tocar el código de las pantallas.
+
+**Errores.** La función `mensajeDeError` traduce el `ProblemDetail` que devuelve el backend al
+texto que se muestra en pantalla, incluidos los errores de validación campo por campo. Así el
+usuario ve *"Una cuenta de ahorros no puede tener un saldo menor a $0"* y no un error genérico.
+
+**Validaciones en los formularios.** Se usan formularios reactivos con las mismas reglas que
+aplica el backend (mayoría de edad, formato de correo, longitudes, monto positivo). Validar en
+el front evita viajes innecesarios al servidor, pero no sustituye la validación del backend:
+la garantía sigue estando allí.
+
+**Pruebas.** 26 pruebas con Vitest. Los servicios se prueban con `HttpTestingController`, que
+verifica la URL, el método y el cuerpo de cada petición sin necesidad de levantar el backend.
 
 ---
 
@@ -722,12 +789,12 @@ Implementado y verificado:
 - Consignaciones, retiros y transferencias, con actualización de saldos y estado de cuenta.
 - Persistencia en PostgreSQL con el esquema y las restricciones necesarias.
 - Manejo global de errores con respuestas uniformes.
-- 104 pruebas automáticas.
+- 104 pruebas automáticas en el backend y 26 en el front.
 - Scripts DDL y DML versionados.
 - Aplicación y base de datos ejecutables en contenedores con un solo comando.
 - CORS configurado para el consumo desde el front.
+- Aplicación front en Angular con las pantallas de clientes, productos y movimientos.
 
 Pendiente:
 
 - Colección de Postman con las peticiones de ejemplo.
-- Aplicación front en Angular.
