@@ -17,11 +17,12 @@ transaccionales sobre esos productos y consultar los estados de cuenta.
 7. [Base de datos: DDL y DML](#base-de-datos-ddl-y-dml)
 8. [API REST](#api-rest)
 9. [Reglas de negocio](#reglas-de-negocio)
-10. [Pruebas](#pruebas)
-11. [Control de versiones](#control-de-versiones)
-12. [Servicios en la nube](#servicios-en-la-nube)
-13. [Front](#front)
-14. [Estado del proyecto](#estado-del-proyecto)
+10. [Decisiones de interpretación del enunciado](#decisiones-de-interpretación-del-enunciado)
+11. [Pruebas](#pruebas)
+12. [Control de versiones](#control-de-versiones)
+13. [Servicios en la nube](#servicios-en-la-nube)
+14. [Front](#front)
+15. [Estado del proyecto](#estado-del-proyecto)
 
 ---
 
@@ -497,7 +498,7 @@ Crear una cuenta de ahorros:
 ```bash
 curl -X POST http://localhost:8080/api/productos \
   -H 'Content-Type: application/json' \
-  -d '{"tipoCuenta": "AHORROS", "clienteId": 1, "saldoInicial": 100000, "exentaGmf": true}'
+  -d '{"tipoCuenta": "AHORROS", "clienteId": 1, "exentaGmf": true}'
 ```
 
 Transferir entre cuentas. La respuesta contiene los dos movimientos generados, unidos por la
@@ -557,7 +558,9 @@ curl "http://localhost:8080/api/transacciones?productoId=1"
 - Un producto siempre pertenece a un cliente existente.
 - El número de cuenta se genera automáticamente: diez dígitos, iniciando en `53` para
   ahorros y en `33` para corriente. Es único, garantizado por restricción en la base de datos.
-- La cuenta se crea en estado activo.
+- La cuenta se crea en estado activo y con saldo $0. El saldo no se recibe en la petición:
+  solo se mueve mediante transacciones, de modo que siempre queda respaldado por los
+  movimientos del estado de cuenta.
 - Las cuentas se pueden activar e inactivar en cualquier momento.
 - Una cuenta de ahorros no puede quedar con saldo menor a cero.
 - Solo se puede cancelar una cuenta cuyo saldo sea cero. La cancelación es definitiva: una
@@ -578,6 +581,54 @@ curl "http://localhost:8080/api/transacciones?productoId=1"
 
 ---
 
+## Decisiones de interpretación del enunciado
+
+Algunos puntos del enunciado admiten más de una lectura. Estas son las decisiones que se
+tomaron y el motivo de cada una.
+
+### La cancelación de una cuenta es un estado terminal
+
+El enunciado indica que las cuentas se pueden activar o inactivar en cualquier momento. Esa
+regla se aplica entre los estados **activa** e **inactiva**, en ambos sentidos y sin
+condiciones. La cancelación, en cambio, se trató como un estado del que no se regresa: una
+cuenta cancelada no vuelve a activarse.
+
+El motivo es que el propio enunciado exige que solo se pueda cancelar una cuenta con saldo
+$0. Si una cuenta cancelada pudiera reactivarse, esa restricción perdería sentido, porque
+bastaría con reactivarla para seguir operando y la cancelación sería equivalente a
+inactivar. Con dos estados reversibles (activa e inactiva) y uno definitivo (cancelada), cada
+uno cumple una función distinta.
+
+### Las cuentas se abren en $0
+
+El enunciado no menciona un saldo de apertura y sí exige que el saldo se actualice con cada
+transacción. Permitir un saldo inicial dejaría cuentas con dinero que ningún movimiento
+respalda: el estado de cuenta no cuadraría con el saldo. Por eso la petición de creación no
+recibe saldo y toda cuenta nace en $0; para tener fondos hay que registrar una consignación,
+que queda visible en el estado de cuenta.
+
+### Los movimientos no se modifican ni se eliminan
+
+El enunciado pide un CRUD de transacciones. Se implementaron la creación y las consultas,
+pero no la actualización ni la eliminación, porque un movimiento financiero es un registro
+histórico: corregir un error se hace con un movimiento que lo compense, no borrando el
+original. Alterar movimientos ya aplicados rompería la correspondencia entre el saldo de la
+cuenta y su historial.
+
+### Solo se opera sobre cuentas activas
+
+El enunciado no precisa qué ocurre al consignar o retirar sobre una cuenta inactiva o
+cancelada. Se optó por rechazar la operación: si inactivar una cuenta no impidiera moverle
+dinero, el estado no tendría ningún efecto práctico.
+
+### Saldo y saldo disponible
+
+El enunciado menciona ambos al describir las transacciones, de modo que se modelaron como
+dos columnas. En una entidad financiera real difieren cuando hay retenciones o fondos en
+canje; como este alcance no contempla retenciones, hoy se mantienen sincronizados.
+
+---
+
 ## Pruebas
 
 ```bash
@@ -585,11 +636,11 @@ cd banco
 ./mvnw test
 ```
 
-103 pruebas automáticas, distribuidas así:
+104 pruebas automáticas, distribuidas así:
 
 | Clase | Pruebas | Tipo |
 | --- | --- | --- |
-| `ProductoTest` | 12 | Reglas del modelo de dominio |
+| `ProductoTest` | 13 | Reglas del modelo de dominio |
 | `TransaccionTest` | 4 | Reglas del modelo de dominio |
 | `ClienteServiceTest` | 13 | Capa de servicio, con dobles de Mockito |
 | `ProductoServiceTest` | 18 | Capa de servicio, con dobles de Mockito |
@@ -671,7 +722,7 @@ Implementado y verificado:
 - Consignaciones, retiros y transferencias, con actualización de saldos y estado de cuenta.
 - Persistencia en PostgreSQL con el esquema y las restricciones necesarias.
 - Manejo global de errores con respuestas uniformes.
-- 103 pruebas automáticas.
+- 104 pruebas automáticas.
 - Scripts DDL y DML versionados.
 - Aplicación y base de datos ejecutables en contenedores con un solo comando.
 - CORS configurado para el consumo desde el front.

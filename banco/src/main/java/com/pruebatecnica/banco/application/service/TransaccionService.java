@@ -2,6 +2,7 @@ package com.pruebatecnica.banco.application.service;
 
 import com.pruebatecnica.banco.domain.exception.ExcepcionDeNegocio;
 import com.pruebatecnica.banco.domain.exception.ExcepcionDeRecursoNoEncontrado;
+import com.pruebatecnica.banco.domain.model.FechaSistema;
 import com.pruebatecnica.banco.domain.model.NaturalezaMovimiento;
 import com.pruebatecnica.banco.domain.model.Producto;
 import com.pruebatecnica.banco.domain.model.TipoTransaccion;
@@ -11,7 +12,6 @@ import com.pruebatecnica.banco.domain.port.out.ProductoRepositoryPort;
 import com.pruebatecnica.banco.domain.port.out.TransaccionRepositoryPort;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -142,7 +142,7 @@ public class TransaccionService implements TransaccionCasosDeUso {
                 .saldoResultante(producto.getSaldo())
                 .referencia(referencia)
                 .descripcion(descripcion)
-                .fecha(LocalDateTime.now())
+                .fecha(FechaSistema.ahora())
                 .build();
 
         movimiento.validar();
