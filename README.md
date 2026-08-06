@@ -129,6 +129,29 @@ de modo que el proyecto funciona recién clonado. Se pueden sobrescribir sin toc
 DB_URL=jdbc:postgresql://otro-host:5432/banco_db ./mvnw spring-boot:run
 ```
 
+### CORS
+
+El front se sirve desde un puerto distinto al de la API, y para el navegador eso son dos
+orígenes diferentes: sin autorización explícita bloquea la respuesta por la política del
+mismo origen. La configuración está en `ConfiguracionCors` y los orígenes autorizados se
+declaran por propiedad, no en el código:
+
+```properties
+app.cors.origenes-permitidos=http://localhost:4200
+```
+
+Se admiten varios separados por coma. Al desplegar basta con cambiar esa propiedad por el
+dominio real del front:
+
+```bash
+./mvnw spring-boot:run --app.cors.origenes-permitidos=https://mi-front.com
+```
+
+Se autorizan los métodos que usa la API (GET, POST, PUT, PATCH, DELETE y OPTIONS) solo bajo
+la ruta `/api/**`, y se permite al navegador guardar en caché la verificación previa durante
+una hora para que no la repita en cada petición. No se habilita el envío de credenciales
+porque la API no usa cookies ni sesiones.
+
 ---
 
 ## Arquitectura
@@ -640,9 +663,9 @@ Implementado y verificado:
 - 100 pruebas automáticas.
 - Scripts DDL y DML versionados.
 - Aplicación y base de datos ejecutables en contenedores con un solo comando.
+- CORS configurado para el consumo desde el front.
 
 Pendiente:
 
-- Configuración de CORS para permitir el consumo desde el front.
 - Colección de Postman con las peticiones de ejemplo.
 - Aplicación front en Angular.
