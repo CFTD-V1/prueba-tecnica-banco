@@ -4,6 +4,7 @@ import com.pruebatecnica.banco.domain.exception.ExcepcionDeNegocio;
 import com.pruebatecnica.banco.domain.model.Cliente;
 import com.pruebatecnica.banco.domain.model.TipoIdentificacion;
 import com.pruebatecnica.banco.domain.port.out.ClienteRepositoryPort;
+import com.pruebatecnica.banco.domain.port.out.ProductoRepositoryPort;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,6 +31,9 @@ class ClienteServiceTest {
 
     @Mock
     private ClienteRepositoryPort clienteRepositoryPort;
+
+    @Mock
+    private ProductoRepositoryPort productoRepositoryPort;
 
     @InjectMocks
     private ClienteService clienteService;
@@ -195,10 +199,26 @@ class ClienteServiceTest {
         Cliente existente = clienteValido();
         existente.setId(1L);
         given(clienteRepositoryPort.buscarPorId(1L)).willReturn(Optional.of(existente));
+        given(productoRepositoryPort.existePorClienteId(1L)).willReturn(false);
 
         clienteService.eliminar(1L);
 
         verify(clienteRepositoryPort, times(1)).eliminarPorId(1L);
+    }
+
+    @Test
+    @DisplayName("No elimina el cliente cuando tiene productos vinculados")
+    void noEliminaElClienteCuandoTieneProductosVinculados() {
+        Cliente existente = clienteValido();
+        existente.setId(1L);
+        given(clienteRepositoryPort.buscarPorId(1L)).willReturn(Optional.of(existente));
+        given(productoRepositoryPort.existePorClienteId(1L)).willReturn(true);
+
+        assertThatThrownBy(() -> clienteService.eliminar(1L))
+                .isInstanceOf(ExcepcionDeNegocio.class)
+                .hasMessageContaining("productos vinculados");
+
+        verify(clienteRepositoryPort, never()).eliminarPorId(any());
     }
 
     @Test

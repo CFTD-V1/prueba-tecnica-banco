@@ -4,6 +4,7 @@ import com.pruebatecnica.banco.domain.exception.ExcepcionDeNegocio;
 import com.pruebatecnica.banco.domain.model.Cliente;
 import com.pruebatecnica.banco.domain.port.in.ClienteCasosDeUso;
 import com.pruebatecnica.banco.domain.port.out.ClienteRepositoryPort;
+import com.pruebatecnica.banco.domain.port.out.ProductoRepositoryPort;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,9 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class ClienteService implements ClienteCasosDeUso {
 
     private final ClienteRepositoryPort clienteRepositoryPort;
+    private final ProductoRepositoryPort productoRepositoryPort;
 
-    public ClienteService(ClienteRepositoryPort clienteRepositoryPort) {
+    public ClienteService(ClienteRepositoryPort clienteRepositoryPort,
+            ProductoRepositoryPort productoRepositoryPort) {
         this.clienteRepositoryPort = clienteRepositoryPort;
+        this.productoRepositoryPort = productoRepositoryPort;
     }
 
     @Override
@@ -82,7 +86,11 @@ public class ClienteService implements ClienteCasosDeUso {
     public void eliminar(Long id) {
         Cliente cliente = obtenerPorId(id);
 
-        // TODO Fase 3: impedir la eliminación si el cliente tiene productos asociados
+        if (productoRepositoryPort.existePorClienteId(cliente.getId())) {
+            throw new ExcepcionDeNegocio(
+                    "No se puede eliminar un cliente que tiene productos vinculados");
+        }
+
         clienteRepositoryPort.eliminarPorId(cliente.getId());
     }
 }
