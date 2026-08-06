@@ -85,6 +85,28 @@ class ProductoControllerTest {
     }
 
     @Test
+    @DisplayName("POST /api/productos acepta el cuerpo minimo: saldo inicial y GMF son opcionales")
+    void creaProductoConElCuerpoMinimo() throws Exception {
+        given(productoCasosDeUso.crear(any(Producto.class))).willReturn(productoGuardado());
+
+        mockMvc.perform(post("/api/productos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tipoCuenta\": \"CORRIENTE\", \"clienteId\": 1}"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(10));
+    }
+
+    @Test
+    @DisplayName("POST /api/productos responde 400 cuando el tipo de cuenta no existe")
+    void responde400CuandoElTipoDeCuentaEsDesconocido() throws Exception {
+        mockMvc.perform(post("/api/productos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tipoCuenta\": \"NOMINA\", \"clienteId\": 1}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Peticion mal formada"));
+    }
+
+    @Test
     @DisplayName("POST /api/productos responde 400 cuando falta el cliente")
     void responde400CuandoFaltaElCliente() throws Exception {
         String cuerpoSinCliente = """

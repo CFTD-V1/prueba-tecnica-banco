@@ -81,7 +81,7 @@ public class ProductoController {
                 .tipoCuenta(request.tipoCuenta())
                 .clienteId(request.clienteId())
                 .saldo(request.saldoInicial() == null ? BigDecimal.ZERO : request.saldoInicial())
-                .exentaGmf(request.exentaGmf())
+                .exentaGmf(Boolean.TRUE.equals(request.exentaGmf()))
                 .build();
     }
 
