@@ -1,6 +1,5 @@
 package com.pruebatecnica.banco.infrastructure.adapter.in.rest;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -77,10 +76,10 @@ public class ProductoController {
     }
 
     private Producto aDominio(ProductoRequest request) {
+        // El saldo no se recibe: lo fija el dominio al inicializar la cuenta.
         return Producto.builder()
                 .tipoCuenta(request.tipoCuenta())
                 .clienteId(request.clienteId())
-                .saldo(request.saldoInicial() == null ? BigDecimal.ZERO : request.saldoInicial())
                 .exentaGmf(Boolean.TRUE.equals(request.exentaGmf()))
                 .build();
     }
