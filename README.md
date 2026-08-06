@@ -546,8 +546,14 @@ curl "http://localhost:8080/api/transacciones?productoId=1"
 
 - El cliente debe ser mayor de edad; no se crea ni se actualiza si es menor.
 - El número de identificación es único.
+- El formato del número de identificación depende del tipo de documento: las cédulas de
+  ciudadanía y de extranjería solo admiten dígitos, y el pasaporte admite letras y números.
+  En ambos casos, entre 5 y 20 caracteres, sin espacios ni símbolos.
 - El correo debe tener formato `xxxx@xxxxx.xxx`.
-- Los nombres y el apellido deben tener al menos dos caracteres.
+- Los nombres y el apellido deben tener al menos dos caracteres y solo admiten letras,
+  espacios, apóstrofes, guiones y puntos. Se aceptan tildes y eñes, de modo que nombres como
+  `María José` o apellidos como `Muñoz`, `D'Angelo` o `Pérez-Gómez` son válidos.
+- La fecha de nacimiento no puede ser futura ni implicar una edad superior a 120 años.
 - La fecha de creación se calcula automáticamente al registrar.
 - La fecha de modificación se recalcula en cada actualización.
 - No se puede eliminar un cliente que tenga productos vinculados.
@@ -571,7 +577,8 @@ curl "http://localhost:8080/api/transacciones?productoId=1"
 ### Transacciones
 
 - Tres tipos: consignación, retiro y transferencia entre cuentas.
-- El monto siempre debe ser mayor que cero.
+- El monto siempre debe ser mayor que cero y admite como máximo dos decimales, que es la
+  precisión con la que se guarda el dinero. Aceptar más obligaría a redondear en silencio.
 - Solo se opera sobre cuentas activas.
 - El saldo y el saldo disponible se actualizan con cada movimiento exitoso.
 - Las transferencias solo se realizan entre cuentas que existen en el sistema, y el origen no
@@ -636,22 +643,23 @@ cd banco
 ./mvnw test
 ```
 
-El backend tiene 104 pruebas automáticas, distribuidas así:
+El backend tiene 122 pruebas automáticas, distribuidas así:
 
 | Clase | Pruebas | Tipo |
 | --- | --- | --- |
+| `ClienteTest` | 15 | Reglas del modelo de dominio |
 | `ProductoTest` | 13 | Reglas del modelo de dominio |
 | `TransaccionTest` | 4 | Reglas del modelo de dominio |
 | `ClienteServiceTest` | 13 | Capa de servicio, con dobles de Mockito |
 | `ProductoServiceTest` | 18 | Capa de servicio, con dobles de Mockito |
 | `TransaccionServiceTest` | 14 | Capa de servicio, con dobles de Mockito |
-| `ClienteControllerTest` | 9 | Capa web con `@WebMvcTest` |
+| `ClienteControllerTest` | 11 | Capa web con `@WebMvcTest` |
 | `ProductoControllerTest` | 16 | Capa web con `@WebMvcTest` |
-| `TransaccionControllerTest` | 13 | Capa web con `@WebMvcTest` |
+| `TransaccionControllerTest` | 14 | Capa web con `@WebMvcTest` |
 | `ConfiguracionCorsTest` | 3 | Cabeceras de CORS y rechazo de orígenes no autorizados |
 | `BancoApplicationTests` | 1 | Arranque del contexto de Spring |
 
-El front tiene 26 pruebas con Vitest (`cd frontend && npm test`): los tres servicios contra
+El front tiene 38 pruebas con Vitest (`cd frontend && npm test`): los tres servicios contra
 `HttpTestingController`, el traductor de errores del `ProblemDetail`, el validador de mayoría
 de edad y el componente raíz.
 
@@ -775,7 +783,7 @@ aplica el backend (mayoría de edad, formato de correo, longitudes, monto positi
 el front evita viajes innecesarios al servidor, pero no sustituye la validación del backend:
 la garantía sigue estando allí.
 
-**Pruebas.** 26 pruebas con Vitest. Los servicios se prueban con `HttpTestingController`, que
+**Pruebas.** 38 pruebas con Vitest. Los servicios se prueban con `HttpTestingController`, que
 verifica la URL, el método y el cuerpo de cada petición sin necesidad de levantar el backend.
 
 ---
@@ -789,7 +797,7 @@ Implementado y verificado:
 - Consignaciones, retiros y transferencias, con actualización de saldos y estado de cuenta.
 - Persistencia en PostgreSQL con el esquema y las restricciones necesarias.
 - Manejo global de errores con respuestas uniformes.
-- 104 pruebas automáticas en el backend y 26 en el front.
+- 122 pruebas automáticas en el backend y 38 en el front.
 - Scripts DDL y DML versionados.
 - Aplicación y base de datos ejecutables en contenedores con un solo comando.
 - CORS configurado para el consumo desde el front.

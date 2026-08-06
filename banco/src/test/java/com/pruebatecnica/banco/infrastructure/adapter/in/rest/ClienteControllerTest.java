@@ -95,6 +95,30 @@ class ClienteControllerTest {
     }
 
     @Test
+    @DisplayName("POST /api/clientes responde 400 cuando la identificacion trae simbolos")
+    void responde400CuandoLaIdentificacionTraeSimbolos() throws Exception {
+        String cuerpo = CUERPO_VALIDO.replace("1020304050", "123-456!");
+
+        mockMvc.perform(post("/api/clientes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(cuerpo))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errores.numeroIdentificacion").exists());
+    }
+
+    @Test
+    @DisplayName("POST /api/clientes responde 400 cuando los nombres traen numeros")
+    void responde400CuandoLosNombresTraenNumeros() throws Exception {
+        String cuerpo = CUERPO_VALIDO.replace("\"nombres\": \"Manuel\"", "\"nombres\": \"Manuel123\"");
+
+        mockMvc.perform(post("/api/clientes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(cuerpo))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errores.nombres").exists());
+    }
+
+    @Test
     @DisplayName("POST /api/clientes responde 400 cuando el cliente es menor de edad")
     void responde400CuandoElClienteEsMenorDeEdad() throws Exception {
         given(clienteCasosDeUso.crear(any(Cliente.class)))
