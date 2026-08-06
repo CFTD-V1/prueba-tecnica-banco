@@ -1,6 +1,7 @@
 package com.pruebatecnica.banco.application.service;
 
 import com.pruebatecnica.banco.domain.exception.ExcepcionDeNegocio;
+import com.pruebatecnica.banco.domain.exception.ExcepcionDeRecursoNoEncontrado;
 import com.pruebatecnica.banco.domain.model.EstadoCuenta;
 import com.pruebatecnica.banco.domain.model.Producto;
 import com.pruebatecnica.banco.domain.port.in.ProductoCasosDeUso;
@@ -48,7 +49,7 @@ public class ProductoService implements ProductoCasosDeUso {
     @Transactional(readOnly = true)
     public Producto obtenerPorId(Long id) {
         return productoRepositoryPort.buscarPorId(id)
-                .orElseThrow(() -> new ExcepcionDeNegocio("No existe un producto con el id " + id));
+                .orElseThrow(() -> new ExcepcionDeRecursoNoEncontrado("No existe un producto con el id " + id));
     }
 
     @Override
@@ -108,7 +109,7 @@ public class ProductoService implements ProductoCasosDeUso {
             throw new ExcepcionDeNegocio("El producto debe estar vinculado a un cliente");
         }
         if (clienteRepositoryPort.buscarPorId(clienteId).isEmpty()) {
-            throw new ExcepcionDeNegocio("No existe un cliente con el id " + clienteId);
+            throw new ExcepcionDeRecursoNoEncontrado("No existe un cliente con el id " + clienteId);
         }
     }
 

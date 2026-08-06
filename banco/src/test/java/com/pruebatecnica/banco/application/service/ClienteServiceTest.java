@@ -1,6 +1,7 @@
 package com.pruebatecnica.banco.application.service;
 
 import com.pruebatecnica.banco.domain.exception.ExcepcionDeNegocio;
+import com.pruebatecnica.banco.domain.exception.ExcepcionDeRecursoNoEncontrado;
 import com.pruebatecnica.banco.domain.model.Cliente;
 import com.pruebatecnica.banco.domain.model.TipoIdentificacion;
 import com.pruebatecnica.banco.domain.port.out.ClienteRepositoryPort;
@@ -136,7 +137,7 @@ class ClienteServiceTest {
         given(clienteRepositoryPort.buscarPorId(99L)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> clienteService.obtenerPorId(99L))
-                .isInstanceOf(ExcepcionDeNegocio.class)
+                .isInstanceOf(ExcepcionDeRecursoNoEncontrado.class)
                 .hasMessageContaining("No existe un cliente");
     }
 
@@ -227,7 +228,7 @@ class ClienteServiceTest {
         given(clienteRepositoryPort.buscarPorId(99L)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> clienteService.eliminar(99L))
-                .isInstanceOf(ExcepcionDeNegocio.class)
+                .isInstanceOf(ExcepcionDeRecursoNoEncontrado.class)
                 .hasMessageContaining("No existe un cliente");
 
         verify(clienteRepositoryPort, never()).eliminarPorId(any());
