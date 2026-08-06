@@ -129,6 +129,29 @@ de modo que el proyecto funciona recién clonado. Se pueden sobrescribir sin toc
 DB_URL=jdbc:postgresql://otro-host:5432/banco_db ./mvnw spring-boot:run
 ```
 
+### CORS
+
+El front se sirve desde un puerto distinto al de la API, y para el navegador eso son dos
+orígenes diferentes: sin autorización explícita bloquea la respuesta por la política del
+mismo origen. La configuración está en `ConfiguracionCors` y los orígenes autorizados se
+declaran por propiedad, no en el código:
+
+```properties
+app.cors.origenes-permitidos=http://localhost:4200
+```
+
+Se admiten varios separados por coma. Al desplegar basta con cambiar esa propiedad por el
+dominio real del front:
+
+```bash
+./mvnw spring-boot:run --app.cors.origenes-permitidos=https://mi-front.com
+```
+
+Se autorizan los métodos que usa la API (GET, POST, PUT, PATCH, DELETE y OPTIONS) solo bajo
+la ruta `/api/**`, y se permite al navegador guardar en caché la verificación previa durante
+una hora para que no la repita en cada petición. No se habilita el envío de credenciales
+porque la API no usa cookies ni sesiones.
+
 ---
 
 ## Arquitectura
@@ -562,7 +585,7 @@ cd banco
 ./mvnw test
 ```
 
-100 pruebas automáticas, distribuidas así:
+103 pruebas automáticas, distribuidas así:
 
 | Clase | Pruebas | Tipo |
 | --- | --- | --- |
@@ -574,6 +597,7 @@ cd banco
 | `ClienteControllerTest` | 9 | Capa web con `@WebMvcTest` |
 | `ProductoControllerTest` | 16 | Capa web con `@WebMvcTest` |
 | `TransaccionControllerTest` | 13 | Capa web con `@WebMvcTest` |
+| `ConfiguracionCorsTest` | 3 | Cabeceras de CORS y rechazo de orígenes no autorizados |
 | `BancoApplicationTests` | 1 | Arranque del contexto de Spring |
 
 El enunciado pide cobertura de las capas de servicio y de controlador; ambas están cubiertas,
@@ -637,12 +661,12 @@ Implementado y verificado:
 - Consignaciones, retiros y transferencias, con actualización de saldos y estado de cuenta.
 - Persistencia en PostgreSQL con el esquema y las restricciones necesarias.
 - Manejo global de errores con respuestas uniformes.
-- 100 pruebas automáticas.
+- 103 pruebas automáticas.
 - Scripts DDL y DML versionados.
 - Aplicación y base de datos ejecutables en contenedores con un solo comando.
+- CORS configurado para el consumo desde el front.
 
 Pendiente:
 
-- Configuración de CORS para permitir el consumo desde el front.
 - Colección de Postman con las peticiones de ejemplo.
 - Aplicación front en Angular.
