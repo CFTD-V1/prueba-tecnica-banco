@@ -585,7 +585,7 @@ cd banco
 ./mvnw test
 ```
 
-100 pruebas automáticas, distribuidas así:
+103 pruebas automáticas, distribuidas así:
 
 | Clase | Pruebas | Tipo |
 | --- | --- | --- |
@@ -597,6 +597,7 @@ cd banco
 | `ClienteControllerTest` | 9 | Capa web con `@WebMvcTest` |
 | `ProductoControllerTest` | 16 | Capa web con `@WebMvcTest` |
 | `TransaccionControllerTest` | 13 | Capa web con `@WebMvcTest` |
+| `ConfiguracionCorsTest` | 3 | Cabeceras de CORS y rechazo de orígenes no autorizados |
 | `BancoApplicationTests` | 1 | Arranque del contexto de Spring |
 
 El enunciado pide cobertura de las capas de servicio y de controlador; ambas están cubiertas,
@@ -660,7 +661,7 @@ Implementado y verificado:
 - Consignaciones, retiros y transferencias, con actualización de saldos y estado de cuenta.
 - Persistencia en PostgreSQL con el esquema y las restricciones necesarias.
 - Manejo global de errores con respuestas uniformes.
-- 100 pruebas automáticas.
+- 103 pruebas automáticas.
 - Scripts DDL y DML versionados.
 - Aplicación y base de datos ejecutables en contenedores con un solo comando.
 - CORS configurado para el consumo desde el front.
