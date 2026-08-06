@@ -164,7 +164,7 @@ class ProductoServiceTest {
 
         assertThatThrownBy(() -> productoService.crear(solicitud(TipoCuenta.AHORROS, BigDecimal.ZERO)))
                 .isInstanceOf(ExcepcionDeNegocio.class)
-                .hasMessageContaining("numero de cuenta unico");
+                .hasMessageContaining("número de cuenta único");
 
         verify(productoRepositoryPort, never()).guardar(any(Producto.class));
     }

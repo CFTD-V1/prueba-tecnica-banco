@@ -66,7 +66,7 @@ public class ProductoService implements ProductoCasosDeUso {
     }
 
     /**
-     * Solo se permite modificar la exencion del GMF: el tipo, el numero de cuenta y
+     * Solo se permite modificar la exención del GMF: el tipo, el número de cuenta y
      * el saldo son inmutables desde el CRUD (el saldo solo cambia con transacciones).
      */
     @Override
@@ -114,8 +114,8 @@ public class ProductoService implements ProductoCasosDeUso {
     }
 
     /**
-     * El numero de cuenta se genera en el dominio; aqui se confirma contra la base de
-     * datos que no exista otro igual y se reintenta un numero acotado de veces.
+     * El número de cuenta se genera en el dominio; aquí se confirma contra la base de
+     * datos que no exista otro igual y se reintenta un número acotado de veces.
      */
     private void asignarNumeroDeCuentaUnico(Producto producto) {
         for (int intento = 0; intento < INTENTOS_NUMERO_CUENTA; intento++) {
@@ -124,6 +124,6 @@ public class ProductoService implements ProductoCasosDeUso {
                 return;
             }
         }
-        throw new ExcepcionDeNegocio("No fue posible generar un numero de cuenta unico, intente nuevamente");
+        throw new ExcepcionDeNegocio("No fue posible generar un número de cuenta único, intente nuevamente");
     }
 }
