@@ -10,6 +10,28 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    # La aplicacion espera a que esta comprobacion pase antes de arrancar.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U banco_user -d banco_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: ./banco
+    container_name: banco-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # Dentro de la red de Docker la base de datos se alcanza por el nombre del
+      # servicio, no por localhost.
+      DB_URL: jdbc:postgresql://postgres:5432/banco_db
+      DB_USER: banco_user
+      DB_PASSWORD: banco_pass
+    ports:
+      - "8080:8080"
 
 volumes:
   postgres_data:
