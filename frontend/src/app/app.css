@@ -1,0 +1,48 @@
+.cabecera {
+  background: #1f3a5f;
+  color: #fff;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 20%);
+}
+
+.cabecera__interior {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  min-height: 3.5rem;
+  flex-wrap: wrap;
+}
+
+.cabecera__titulo {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.menu {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.menu__enlace {
+  color: #cfdcec;
+  text-decoration: none;
+  padding: 0.5rem 0.9rem;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+
+.menu__enlace:hover {
+  background: rgb(255 255 255 / 10%);
+  color: #fff;
+}
+
+.menu__enlace--activo {
+  background: rgb(255 255 255 / 16%);
+  color: #fff;
+  font-weight: 600;
+}
+
+.contenido {
+  padding-block: 1.75rem 3rem;
+}

@@ -1,0 +1,250 @@
+:root {
+  --color-texto: #22303f;
+  --color-tenue: #6b7a8c;
+  --color-borde: #d8dfe7;
+  --color-fondo: #f4f6f9;
+  --color-principal: #1f3a5f;
+  --color-error: #b3261e;
+  --color-exito: #1c6b3f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.contenedor {
+  width: min(1100px, 100% - 2rem);
+  margin-inline: auto;
+}
+
+h1 {
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+/* --- Encabezado de cada pantalla --- */
+.encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+/* --- Tarjeta --- */
+.tarjeta {
+  background: #fff;
+  border: 1px solid var(--color-borde);
+  border-radius: 6px;
+  padding: 1.25rem;
+}
+
+/* --- Tabla --- */
+.tabla-contenedor {
+  background: #fff;
+  border: 1px solid var(--color-borde);
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid var(--color-borde);
+  white-space: nowrap;
+}
+
+th {
+  background: #eef2f7;
+  font-weight: 600;
+  color: #46586b;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr:hover {
+  background: #f8fafc;
+}
+
+td.numero,
+th.numero {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Botones --- */
+.boton {
+  display: inline-block;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-size: 0.92rem;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  background: var(--color-principal);
+  color: #fff;
+}
+
+.boton:hover:not(:disabled) {
+  filter: brightness(1.15);
+}
+
+.boton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.boton--secundario {
+  background: #fff;
+  border-color: var(--color-borde);
+  color: var(--color-texto);
+}
+
+.boton--peligro {
+  background: #fff;
+  border-color: #e3b5b2;
+  color: var(--color-error);
+}
+
+.boton--pequeno {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.85rem;
+}
+
+/* --- Formularios --- */
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 1rem;
+}
+
+.campo > label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #46586b;
+}
+
+input,
+select {
+  font: inherit;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--color-borde);
+  border-radius: 4px;
+  background: #fff;
+  color: inherit;
+  width: 100%;
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid #a9c2e0;
+  outline-offset: -1px;
+}
+
+.campo--invalido input,
+.campo--invalido select {
+  border-color: var(--color-error);
+}
+
+.campo__error {
+  color: var(--color-error);
+  font-size: 0.82rem;
+}
+
+.rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0 1rem;
+}
+
+.acciones {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* --- Avisos --- */
+.aviso {
+  border-radius: 4px;
+  padding: 0.7rem 0.9rem;
+  margin-bottom: 1rem;
+  font-size: 0.92rem;
+}
+
+.aviso--error {
+  background: #fdecea;
+  border: 1px solid #f3c2bd;
+  color: var(--color-error);
+}
+
+.aviso--exito {
+  background: #e8f5ec;
+  border: 1px solid #b7ddc5;
+  color: var(--color-exito);
+}
+
+.vacio {
+  padding: 2rem;
+  text-align: center;
+  color: var(--color-tenue);
+}
+
+/* --- Etiquetas de estado --- */
+.etiqueta {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.etiqueta--activa {
+  background: #e2f3e8;
+  color: var(--color-exito);
+}
+
+.etiqueta--inactiva {
+  background: #fdf1dd;
+  color: #8a5b13;
+}
+
+.etiqueta--cancelada {
+  background: #eceef1;
+  color: #5c6b7a;
+}
+
+.etiqueta--credito {
+  background: #e2f3e8;
+  color: var(--color-exito);
+}
+
+.etiqueta--debito {
+  background: #fdecea;
+  color: var(--color-error);
+}
+
+.texto-tenue {
+  color: var(--color-tenue);
+}
