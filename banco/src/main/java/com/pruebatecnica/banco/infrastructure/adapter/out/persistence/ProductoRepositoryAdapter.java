@@ -32,11 +32,6 @@ public class ProductoRepositoryAdapter implements ProductoRepositoryPort {
     }
 
     @Override
-    public Optional<Producto> buscarPorNumeroCuenta(String numeroCuenta) {
-        return productoJpaRepository.findByNumeroCuenta(numeroCuenta).map(this::aDominio);
-    }
-
-    @Override
     public List<Producto> listarTodos() {
         return productoJpaRepository.findAll()
                 .stream()

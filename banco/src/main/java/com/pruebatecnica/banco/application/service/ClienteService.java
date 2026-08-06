@@ -1,6 +1,7 @@
 package com.pruebatecnica.banco.application.service;
 
 import com.pruebatecnica.banco.domain.exception.ExcepcionDeNegocio;
+import com.pruebatecnica.banco.domain.exception.ExcepcionDeRecursoNoEncontrado;
 import com.pruebatecnica.banco.domain.model.Cliente;
 import com.pruebatecnica.banco.domain.port.in.ClienteCasosDeUso;
 import com.pruebatecnica.banco.domain.port.out.ClienteRepositoryPort;
@@ -45,7 +46,7 @@ public class ClienteService implements ClienteCasosDeUso {
     @Transactional(readOnly = true)
     public Cliente obtenerPorId(Long id) {
         return clienteRepositoryPort.buscarPorId(id)
-                .orElseThrow(() -> new ExcepcionDeNegocio("No existe un cliente con el id " + id));
+                .orElseThrow(() -> new ExcepcionDeRecursoNoEncontrado("No existe un cliente con el id " + id));
     }
 
     @Override

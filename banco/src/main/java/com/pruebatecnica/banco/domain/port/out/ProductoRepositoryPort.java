@@ -11,8 +11,6 @@ public interface ProductoRepositoryPort {
 
     Optional<Producto> buscarPorId(Long id);
 
-    Optional<Producto> buscarPorNumeroCuenta(String numeroCuenta);
-
     List<Producto> listarTodos();
 
     List<Producto> listarPorClienteId(Long clienteId);

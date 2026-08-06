@@ -19,8 +19,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Producto {
 
-    public static final int LONGITUD_NUMERO_CUENTA = 10;
-
+    private static final int LONGITUD_NUMERO_CUENTA = 10;
     private static final int DIGITOS_ALEATORIOS = LONGITUD_NUMERO_CUENTA - 2;
 
     private Long id;
@@ -48,7 +47,7 @@ public class Producto {
         validarSaldoDeAhorros();
     }
 
-    /** Estado con el que nace una cuenta recien creada. */
+    /** Estado con el que nace una cuenta recién creada. */
     public void inicializar() {
         if (saldo == null) {
             saldo = BigDecimal.ZERO;
@@ -57,7 +56,7 @@ public class Producto {
         this.saldoDisponible = this.saldo;
     }
 
-    /** Genera un numero de cuenta de 10 digitos con el prefijo del tipo de cuenta. */
+    /** Genera un número de cuenta de 10 dígitos con el prefijo del tipo de cuenta. */
     public void asignarNumeroDeCuenta() {
         StringBuilder numero = new StringBuilder(tipoCuenta.getPrefijo());
         for (int i = 0; i < DIGITOS_ALEATORIOS; i++) {
@@ -111,7 +110,7 @@ public class Producto {
         this.saldoDisponible = this.saldo;
     }
 
-    public boolean esDeAhorros() {
+    private boolean esDeAhorros() {
         return tipoCuenta == TipoCuenta.AHORROS;
     }
 

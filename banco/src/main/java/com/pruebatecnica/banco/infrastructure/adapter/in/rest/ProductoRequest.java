@@ -8,8 +8,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
 /**
- * El saldo inicial y la exencion del GMF son opcionales: si no se envian, la cuenta
- * nace con saldo $0 y sin exencion. Por eso exentaGmf es Boolean y no boolean.
+ * El saldo inicial y la exención del GMF son opcionales: si no se envían, la cuenta
+ * nace con saldo $0 y sin exención. Por eso exentaGmf es Boolean y no boolean.
  */
 public record ProductoRequest(
 

@@ -1,6 +1,7 @@
 package com.pruebatecnica.banco.infrastructure.adapter.in.rest;
 
 import com.pruebatecnica.banco.domain.exception.ExcepcionDeNegocio;
+import com.pruebatecnica.banco.domain.exception.ExcepcionDeRecursoNoEncontrado;
 import com.pruebatecnica.banco.domain.model.EstadoCuenta;
 import com.pruebatecnica.banco.domain.model.Producto;
 import com.pruebatecnica.banco.domain.model.TipoCuenta;
@@ -28,6 +29,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -103,7 +105,7 @@ class ProductoControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"tipoCuenta\": \"NOMINA\", \"clienteId\": 1}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.title").value("Peticion mal formada"));
+                .andExpect(jsonPath("$.title").value("Petición mal formada"));
     }
 
     @Test
@@ -121,7 +123,7 @@ class ProductoControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(cuerpoSinCliente))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.title").value("Error de validacion"))
+                .andExpect(jsonPath("$.title").value("Error de validación"))
                 .andExpect(jsonPath("$.errores.clienteId").exists());
     }
 
@@ -138,17 +140,30 @@ class ProductoControllerTest {
     }
 
     @Test
-    @DisplayName("POST /api/productos responde 400 cuando el cliente no existe")
-    void responde400CuandoElClienteNoExiste() throws Exception {
+    @DisplayName("POST /api/productos responde 404 cuando el cliente no existe")
+    void responde404CuandoElClienteNoExiste() throws Exception {
         given(productoCasosDeUso.crear(any(Producto.class)))
-                .willThrow(new ExcepcionDeNegocio("No existe un cliente con el id 1"));
+                .willThrow(new ExcepcionDeRecursoNoEncontrado("No existe un cliente con el id 1"));
 
         mockMvc.perform(post("/api/productos")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(CUERPO_VALIDO))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.title").value("Regla de negocio incumplida"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.title").value("Recurso no encontrado"))
                 .andExpect(jsonPath("$.detail").value("No existe un cliente con el id 1"));
+    }
+
+    @Test
+    @DisplayName("POST /api/productos responde 409 cuando la base de datos rechaza un duplicado")
+    void responde409CuandoLaBaseDeDatosRechazaUnDuplicado() throws Exception {
+        given(productoCasosDeUso.crear(any(Producto.class)))
+                .willThrow(new DataIntegrityViolationException("uk_productos_numero_cuenta"));
+
+        mockMvc.perform(post("/api/productos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(CUERPO_VALIDO))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.title").value("Conflicto de datos"));
     }
 
     @Test
@@ -185,13 +200,13 @@ class ProductoControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/productos/{id} responde 400 cuando el producto no existe")
-    void responde400CuandoElProductoNoExiste() throws Exception {
+    @DisplayName("GET /api/productos/{id} responde 404 cuando el producto no existe")
+    void responde404CuandoElProductoNoExiste() throws Exception {
         given(productoCasosDeUso.obtenerPorId(99L))
-                .willThrow(new ExcepcionDeNegocio("No existe un producto con el id 99"));
+                .willThrow(new ExcepcionDeRecursoNoEncontrado("No existe un producto con el id 99"));
 
         mockMvc.perform(get("/api/productos/99"))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.detail").value("No existe un producto con el id 99"));
     }
 

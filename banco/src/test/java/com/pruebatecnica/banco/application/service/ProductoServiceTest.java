@@ -1,6 +1,7 @@
 package com.pruebatecnica.banco.application.service;
 
 import com.pruebatecnica.banco.domain.exception.ExcepcionDeNegocio;
+import com.pruebatecnica.banco.domain.exception.ExcepcionDeRecursoNoEncontrado;
 import com.pruebatecnica.banco.domain.model.Cliente;
 import com.pruebatecnica.banco.domain.model.EstadoCuenta;
 import com.pruebatecnica.banco.domain.model.Producto;
@@ -49,7 +50,7 @@ class ProductoServiceTest {
     }
 
     private Producto guardado(TipoCuenta tipoCuenta, BigDecimal saldo, EstadoCuenta estado) {
-        Producto producto = Producto.builder()
+        return Producto.builder()
                 .id(10L)
                 .tipoCuenta(tipoCuenta)
                 .numeroCuenta(tipoCuenta.getPrefijo() + "12345678")
@@ -58,7 +59,6 @@ class ProductoServiceTest {
                 .saldoDisponible(saldo)
                 .clienteId(1L)
                 .build();
-        return producto;
     }
 
     private void clienteExiste() {
@@ -108,7 +108,7 @@ class ProductoServiceTest {
         given(clienteRepositoryPort.buscarPorId(1L)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> productoService.crear(solicitud(TipoCuenta.AHORROS, BigDecimal.ZERO)))
-                .isInstanceOf(ExcepcionDeNegocio.class)
+                .isInstanceOf(ExcepcionDeRecursoNoEncontrado.class)
                 .hasMessageContaining("No existe un cliente");
 
         verify(productoRepositoryPort, never()).guardar(any(Producto.class));
@@ -164,7 +164,7 @@ class ProductoServiceTest {
 
         assertThatThrownBy(() -> productoService.crear(solicitud(TipoCuenta.AHORROS, BigDecimal.ZERO)))
                 .isInstanceOf(ExcepcionDeNegocio.class)
-                .hasMessageContaining("numero de cuenta unico");
+                .hasMessageContaining("número de cuenta único");
 
         verify(productoRepositoryPort, never()).guardar(any(Producto.class));
     }
@@ -186,7 +186,7 @@ class ProductoServiceTest {
         given(productoRepositoryPort.buscarPorId(99L)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> productoService.obtenerPorId(99L))
-                .isInstanceOf(ExcepcionDeNegocio.class)
+                .isInstanceOf(ExcepcionDeRecursoNoEncontrado.class)
                 .hasMessageContaining("No existe un producto");
     }
 

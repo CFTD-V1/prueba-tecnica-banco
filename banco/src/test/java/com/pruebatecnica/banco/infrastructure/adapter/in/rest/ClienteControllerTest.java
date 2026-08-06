@@ -1,6 +1,7 @@
 package com.pruebatecnica.banco.infrastructure.adapter.in.rest;
 
 import com.pruebatecnica.banco.domain.exception.ExcepcionDeNegocio;
+import com.pruebatecnica.banco.domain.exception.ExcepcionDeRecursoNoEncontrado;
 import com.pruebatecnica.banco.domain.model.Cliente;
 import com.pruebatecnica.banco.domain.model.TipoIdentificacion;
 import com.pruebatecnica.banco.domain.port.in.ClienteCasosDeUso;
@@ -89,7 +90,7 @@ class ClienteControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(cuerpoInvalido))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.title").value("Error de validacion"))
+                .andExpect(jsonPath("$.title").value("Error de validación"))
                 .andExpect(jsonPath("$.errores.correo").exists());
     }
 
@@ -130,13 +131,14 @@ class ClienteControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/clientes/{id} responde 400 cuando el cliente no existe")
-    void responde400CuandoElClienteNoExiste() throws Exception {
+    @DisplayName("GET /api/clientes/{id} responde 404 cuando el cliente no existe")
+    void responde404CuandoElClienteNoExiste() throws Exception {
         given(clienteCasosDeUso.obtenerPorId(99L))
-                .willThrow(new ExcepcionDeNegocio("No existe un cliente con el id 99"));
+                .willThrow(new ExcepcionDeRecursoNoEncontrado("No existe un cliente con el id 99"));
 
         mockMvc.perform(get("/api/clientes/99"))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.title").value("Recurso no encontrado"))
                 .andExpect(jsonPath("$.detail").value("No existe un cliente con el id 99"));
     }
 
