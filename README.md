@@ -803,6 +803,3 @@ Implementado y verificado:
 - CORS configurado para el consumo desde el front.
 - Aplicación front en Angular con las pantallas de clientes, productos y movimientos.
 
-Pendiente:
-
-- Colección de Postman con las peticiones de ejemplo.
